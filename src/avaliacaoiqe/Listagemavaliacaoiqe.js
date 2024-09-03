@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { buscaTodos, exclui } from '../services/dbservice'; // Certifique-se de que a função exclui está disponível em dbservice
+import { buscaTodos, exclui } from '../services/dbservice';
 
 const ListagemAvaliacaoIQE = ({ navigation }) => {
   const [avaliacoes, setAvaliacoes] = useState([]);
+  const [avaliadores, setAvaliadores] = useState([]);
+  const [etes, setETEs] = useState([]);
 
   useEffect(() => {
     loadAvaliacoes();
+    loadAvaliadores();
+    loadETEs();
   }, []);
 
   async function loadAvaliacoes() {
@@ -20,6 +24,34 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     } catch (error) {
       console.error('Erro ao carregar Avaliações:', error);
       Alert.alert('Erro', 'Erro ao carregar Avaliações. Veja o console para mais detalhes.');
+    }
+  }
+
+  async function loadAvaliadores() {
+    try {
+      const data = await buscaTodos('avaliadorinea');
+      if (Array.isArray(data)) {
+        setAvaliadores(data);
+      } else {
+        throw new Error('Dados retornados não são um array');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar Avaliadores:', error);
+      Alert.alert('Erro', 'Erro ao carregar Avaliadores. Veja o console para mais detalhes.');
+    }
+  }
+
+  async function loadETEs() {
+    try {
+      const data = await buscaTodos('ete');
+      if (Array.isArray(data)) {
+        setETEs(data);
+      } else {
+        throw new Error('Dados retornados não são um array');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar ETEs:', error);
+      Alert.alert('Erro', 'Erro ao carregar ETEs. Veja o console para mais detalhes.');
     }
   }
 
@@ -47,7 +79,19 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
   }
 
   function handleEditAvaliacao(avaliacao) {
-    navigation.navigate('CadastroAvaliacaoIQE', { avId: avaliacao.CodAval }); // Use CodAval para navegação
+    navigation.navigate('CadastroAvaliacaoIQE', { avId: avaliacao.CodAval });
+  }
+
+  // Função para obter o nome do avaliador com base no código
+  function getAvaliadorNome(codAvaliadorINEA) {
+    const avaliador = avaliadores.find(av => av.CodAvaliador === codAvaliadorINEA);
+    return avaliador ? avaliador.NomeAvaliador : 'N/A';
+  }
+
+  // Função para obter o nome da ETE com base no código
+  function getETENome(codETE) {
+    const ete = etes.find(e => e.CodETE === codETE);
+    return ete ? ete.NomeETE : 'N/A';
   }
 
   return (
@@ -66,8 +110,8 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
             <View style={styles.listItem}>
               <View style={{ flex: 1 }}>
                 <Text>{item.AnoBase ? item.AnoBase.toString() : 'N/A'} - {item.DataVistoria ? item.DataVistoria.toString() : 'N/A'}</Text>
-                <Text>Avaliador: {item.CodAvaliadorINEA ? item.CodAvaliadorINEA.toString() : 'N/A'}</Text>
-                <Text>ETE: {item.CodETE ? item.CodETE.toString() : 'N/A'}</Text>
+                <Text>Avaliador: {getAvaliadorNome(item.CodAvaliadorINEA)}</Text>
+                <Text>ETE: {getETENome(item.CodETE)}</Text>
               </View>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.editButton} onPress={() => handleEditAvaliacao(item)}>

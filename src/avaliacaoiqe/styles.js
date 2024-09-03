@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 50, 
     marginTop: 80, 
-    color: '#381704', 
+    color: '#381704',
     textAlign: 'center',
   },
   inputGroup: {
@@ -32,14 +32,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: '#FFFFFF',
   },
-  picker: {
-    height: 40,
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 20,
-    backgroundColor: '#FFFFFF',
-  },
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -50,10 +42,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginHorizontal: 8, 
+    marginHorizontal: 8,
     alignItems: 'center',
     elevation: 4,
-    flex: 1, 
   },
   buttonText: {
     color: '#FFFFFF',
@@ -88,7 +79,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
-  
   emptyView: {
     flex: 1,
     justifyContent: 'center',
@@ -101,3 +91,12 @@ const styles = StyleSheet.create({
 });
 
 export default styles;
+
+
+
+
+
+
+
+
+

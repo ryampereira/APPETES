@@ -17,8 +17,8 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
   const [selectedAvaliacao, setSelectedAvaliacao] = useState(null);
 
   useEffect(() => {
-    loadAvaliadores();
-    loadETEs();
+    loadAvaliadores();  // Carregar avaliadores
+    loadETEs();         // Carregar ETEs
 
     if (route.params?.avId) {
       fetchAvaliacao();
@@ -28,11 +28,11 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
   async function loadAvaliadores() {
     try {
       const data = await buscaTodos('avaliadorinea');
-      console.log('Dados dos avaliadores carregados:', data);
-      // Corrigido para usar NomeAvaliador
-      const validData = data.filter(avaliador => avaliador.CodAvaliadorINEA && avaliador.NomeAvaliador);
-      console.log('Avaliadores válidos:', validData);
-      setAvaliadores(validData);
+      if (data && data.length > 0) {
+        setAvaliadores(data);
+      } else {
+        setAvaliadores([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar avaliadores:', error);
       Alert.alert('Erro', 'Erro ao carregar avaliadores.');
@@ -42,8 +42,11 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
   async function loadETEs() {
     try {
       const data = await buscaTodos('ete');
-      console.log('ETEs carregados:', data);
-      setETEs(data);
+      if (data && data.length > 0) {
+        setETEs(data);
+      } else {
+        setETEs([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar ETEs:', error);
       Alert.alert('Erro', 'Erro ao carregar ETEs.');
@@ -73,10 +76,17 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
 
   function validateFields() {
     const { AnoBase, DataVistoria, CodAvaliadorINEA, CodETE } = avaliacao;
-    if (!AnoBase || isNaN(AnoBase) || !DataVistoria || !CodAvaliadorINEA || !CodETE) {
-      return false;
-    }
-    return true;
+    return AnoBase && isNumeric(AnoBase) && DataVistoria && isValidDate(DataVistoria) && CodAvaliadorINEA && CodETE;
+  }
+
+  function isNumeric(value) {
+    return /^\d+$/.test(value);
+  }
+
+  function isValidDate(dateString) {
+    // Regex para verificar o formato dia/mês/ano
+    const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    return regex.test(dateString);
   }
 
   async function handleSaveAvaliacao() {
@@ -101,63 +111,79 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Cadastro de Avaliação de IQE</Text>
 
-      <Text>Ano Base</Text>
-      <TextInput
-        style={styles.input}
-        value={avaliacao.AnoBase}
-        onChangeText={text => setAvaliacao(prev => ({ ...prev, AnoBase: text }))}
-        keyboardType="numeric"
-      />
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Ano Base</Text>
+        <TextInput
+          style={styles.textInput}
+          value={avaliacao.AnoBase}
+          onChangeText={text => setAvaliacao(prev => ({ ...prev, AnoBase: text }))}
+          keyboardType="numeric"
+          placeholder="Digite o ano base"
+        />
+      </View>
 
-      <Text>Data da Vistoria</Text>
-      <TextInput
-        style={styles.input}
-        value={avaliacao.DataVistoria}
-        onChangeText={text => setAvaliacao(prev => ({ ...prev, DataVistoria: text }))}
-      />
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Data da Vistoria (dd/mm/aaaa)</Text>
+        <TextInput
+          style={styles.textInput}
+          value={avaliacao.DataVistoria}
+          onChangeText={text => setAvaliacao(prev => ({ ...prev, DataVistoria: text }))}
+          placeholder="Digite a data da vistoria"
+          maxLength={10} // Para limitar o comprimento ao formato dd/mm/aaaa
+        />
+      </View>
 
-      <Text>Avaliador</Text>
-      <Picker
-        selectedValue={avaliacao.CodAvaliadorINEA}
-        style={styles.picker}
-        onValueChange={(itemValue) => setAvaliacao(prev => ({ ...prev, CodAvaliadorINEA: itemValue }))}
-      >
-        {avaliadores.length > 0 ? (
-          avaliadores.map(avaliador => (
-            <Picker.Item key={avaliador.CodAvaliadorINEA} label={avaliador.NomeAvaliador} value={avaliador.CodAvaliadorINEA} />
-          ))
-        ) : (
-          <Picker.Item label="Nenhum avaliador disponível" value="" />
-        )}
-      </Picker>
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Avaliador</Text>
+        <Picker
+          selectedValue={avaliacao.CodAvaliadorINEA}
+          style={styles.textInput}
+          onValueChange={(itemValue) => setAvaliacao(prev => ({ ...prev, CodAvaliadorINEA: itemValue }))}
+        >
+          {avaliadores.length > 0 ? (
+            avaliadores.map(avaliador => (
+              <Picker.Item key={avaliador.CodAvaliador} label={avaliador.NomeAvaliador} value={avaliador.CodAvaliador} />
+            ))
+          ) : (
+            <Picker.Item label="Nenhum avaliador disponível" value="" />
+          )}
+        </Picker>
+      </View>
 
-      <Text>ETE</Text>
-      <Picker
-        selectedValue={avaliacao.CodETE}
-        style={styles.picker}
-        onValueChange={(itemValue) => setAvaliacao(prev => ({ ...prev, CodETE: itemValue }))}
-      >
-        {etes.length > 0 ? (
-          etes.map(ete => (
-            <Picker.Item key={ete.CodETE} label={ete.NomeETE} value={ete.CodETE} />
-          ))
-        ) : (
-          <Picker.Item label="Nenhuma ETE disponível" value="" />
-        )}
-      </Picker>
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>ETE</Text>
+        <Picker
+          selectedValue={avaliacao.CodETE}
+          style={styles.textInput}
+          onValueChange={(itemValue) => setAvaliacao(prev => ({ ...prev, CodETE: itemValue }))}
+        >
+          {etes.length > 0 ? (
+            etes.map(ete => (
+              <Picker.Item key={ete.CodETE} label={ete.NomeETE} value={ete.CodETE} />
+            ))
+          ) : (
+            <Picker.Item label="Nenhuma ETE disponível" value="" />
+          )}
+        </Picker>
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSaveAvaliacao}>
-        <Text style={styles.buttonText}>Salvar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleSaveAvaliacao}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
 
 export default CadastroAvaliacaoIQE;
+
+
+
+
 
 
 
