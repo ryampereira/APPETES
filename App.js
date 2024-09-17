@@ -13,6 +13,7 @@ import ListagemETEs from './src/ete/ListagemETEs';
 import CadastroETE from './src/ete/ete';
 import CadastroAvaliacaoIQE from './src/avaliacaoiqe/avaliacaoiqe';
 import ListagemAvaliacaoIQE from './src/avaliacaoiqe/Listagemavaliacaoiqe';
+import Questionario from './src/questionario/questionario';
 
 
 
@@ -81,6 +82,11 @@ export default function App() {
          <Stack.Screen
           name="CadastroAvaliacaoIQE" 
           component={CadastroAvaliacaoIQE}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="Questionario" 
+          component={Questionario}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
