@@ -15,9 +15,6 @@ import CadastroAvaliacaoIQE from './src/avaliacaoiqe/avaliacaoiqe';
 import ListagemAvaliacaoIQE from './src/avaliacaoiqe/Listagemavaliacaoiqe';
 import Questionario from './src/questionario/questionario';
 
-
-
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {

@@ -94,6 +94,10 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     return ete ? ete.NomeETE : 'N/A';
   }
 
+  function goToQuestionario (codAval) {
+    navigation.navigate('Questionario', { codAval: codAval })
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Avaliações de IQE cadastradas</Text>
@@ -107,7 +111,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
           data={avaliacoes}
           keyExtractor={(item) => item.CodAval ? item.CodAval.toString() : '0'}
           renderItem={({ item }) => (
-            <View style={styles.listItem}>
+            <TouchableOpacity onPress={() => goToQuestionario(item.CodAval)} style={styles.listItem}>
               <View style={{ flex: 1 }}>
                 <Text>{item.AnoBase ? item.AnoBase.toString() : 'N/A'} - {item.DataVistoria ? item.DataVistoria.toString() : 'N/A'}</Text>
                 <Text>Avaliador: {getAvaliadorNome(item.CodAvaliadorINEA)}</Text>
@@ -121,7 +125,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}

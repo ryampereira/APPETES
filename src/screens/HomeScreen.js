@@ -37,12 +37,6 @@ const HomeScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Cadastrar IQE</Text> 
       </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('Questionario')} 
-      >
-        <Text style={styles.buttonText}>teste perguntas</Text> 
-      </TouchableOpacity>
     </View>
   );
 };
