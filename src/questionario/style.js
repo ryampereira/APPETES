@@ -7,15 +7,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   header: {
-    fontSize: 26,
-    fontWeight: '700',
-    marginBottom: 50,
-    marginTop: 80,
+    fontSize: 30, // Aumenta o tamanho da fonte
+    fontWeight: 'bold', // Torna o texto mais ousado
+    marginBottom: 20, // Reduz a margem inferior para compactar
+    marginTop: 60, // Ajusta a margem superior
     color: '#381704',
     textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: 20,
+    borderBottomWidth: 2, // Adiciona uma linha abaixo
+    borderBottomColor: '#8B4513', // Cor da linha
+    paddingBottom: 10, // Adiciona espaço abaixo do texto
   },
   label: {
     fontSize: 16,
@@ -23,26 +23,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#381704',
   },
-  textInput: {
-    height: 40,
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    backgroundColor: '#FFFFFF',
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 20,
-  },
   button: {
     backgroundColor: '#381704',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginHorizontal: 8,
+    marginTop: 10, 
+    marginBottom: 30,
     alignItems: 'center',
     elevation: 4,
   },
@@ -52,9 +39,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     padding: 16,
     marginVertical: 8,
     backgroundColor: '#FFFFFF',
@@ -65,28 +49,31 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  deleteButton: {
-    backgroundColor: 'red',
-    height: 40,
-    width: 70,
-    borderRadius: 0,
-    justifyContent: 'center',
+  respostasContainer: {
+    marginTop: 10,
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderColor: '#fff',
+    marginBottom: 10,
+  },
+  radioButton: {
+    height: 24,
+    width: 24,
+    borderRadius: 12,
     borderWidth: 2,
-  },
-  deleteButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
-  emptyView: {
-    flex: 1,
+    borderColor: 'gray',
+    marginRight: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emptyText: {
-    fontSize: 18,
-    color: '#888',
+  radioButtonSelected: {
+    borderColor: '#8B4513', // Cor marrom para a seleção
+    backgroundColor: '#8B4513', // Cor marrom quando selecionado
+  },
+  radioButtonLabel: {
+    fontSize: 16,
+    color: '#381704',
   },
 });
 

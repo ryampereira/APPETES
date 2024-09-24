@@ -15,7 +15,7 @@ export async function openDatabase() {
 
     // Verifica se o diretório já existe antes de tentar criá-lo
     const dirInfo = await FileSystem.getInfoAsync(dbDirectory);
-    if (!dirInfo.exists) {
+    if (dirInfo.exists) {
       console.log('Criando diretório do banco de dados:', dbDirectory);
       await FileSystem.makeDirectoryAsync(dbDirectory, { intermediates: true });
     }

@@ -218,3 +218,23 @@ export const atualizaResposta = async (codAval, codInd, codAvalPeso) => {
     });
   });
 };
+
+export const salvaFoto = async (photoUrl, codInd, codAval) => {
+  const db = await initializeDb();
+
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `
+          UPDATE avaliacaoiqeitem SET PhotoURL=?
+          WHERE CodInd = ? and CodAval = ?
+        `,
+        [photoUrl, codInd, codAval],
+        (_, results) => {
+          console.log(`Foto salva no banco de dados com indicador ${codInd} e avaliacao ${codAval}`)
+        },
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
