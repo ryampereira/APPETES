@@ -6,46 +6,36 @@ import { useNavigation } from "@react-navigation/native";
 
 import { 
     formataPerguntas,
-    atualizaResposta,
-    buscaPerguntas
+    buscaPerguntas,
+    verificaExistenciaPerguntas,
+    criaPerguntaEmAvaliacaoItem
 } from "../services/questionarioservice";
 
-import {
-    MaterialCommunityIcons,
-    Feather,
-    Ionicons,
-    AntDesign,
-} from "@expo/vector-icons";
-
-import CameraComponent from "./cameracomp/cameracomp.js";
+import Pergunta from "./pergunta/pergunta.js";
 
 const Questionario = ({ route }) => {
     const navigate = useNavigation();
     const [perguntas, setPerguntas] = useState([]);
-    const [cameraVisible, setCameraVisible] = useState(false);
-    const [capturedPhoto, setCapturedPhoto] = useState(null);
-    const [showImageSettings, setShowImageSettings] = useState(false);
     const codAval = route.params.codAval;
 
-    // Função para lidar com o clique em uma resposta
-    const handleRespostaClick = async (codAval, codInd, codAvalPeso) => {
-        try {
-            // Atualiza a resposta no banco de dados
-            await atualizaResposta(codAval, codInd, codAvalPeso);
-
-            // Recarrega as perguntas
-            const resposta = await buscaPerguntas(codAval);
-            const perguntasFormatadas = formataPerguntas(resposta);
-            setPerguntas(perguntasFormatadas);
-        } catch (error) {
-            console.error("Erro ao atualizar a resposta: ", error);
-        }
-    };
+    const recarregaPerguntas = async () => {
+        const resposta = await buscaPerguntas(codAval);
+        const perguntasFormatadas = formataPerguntas(resposta);
+        setPerguntas(perguntasFormatadas);
+    }
 
     const fetchData = async () => {
         try {
             const resposta = await buscaPerguntas(codAval);
             const perguntasFormatadas = formataPerguntas(resposta);
+
+            // Verifica se já existem perguntas inseridas para essa avaliação
+            const perguntasExistentes = await verificaExistenciaPerguntas(codAval);
+
+            if (!perguntasExistentes) {
+                await criaPerguntaEmAvaliacaoItem(codAval, perguntasFormatadas);
+            }
+
             setPerguntas(perguntasFormatadas);
         } catch (err) {
             console.error(err);
@@ -53,17 +43,7 @@ const Questionario = ({ route }) => {
         }
     };
 
-    const handleOpenCamera = () => {
-        setCameraVisible(true);
-    };
-
-    const handleCloseCamera = () => {
-        setCameraVisible(false);
-    };
-
-    const handlePhotoTaken = (photoUri) => {
-        setCapturedPhoto(photoUri);
-    };
+    
 
     useEffect(() => {
         fetchData();
@@ -76,59 +56,17 @@ const Questionario = ({ route }) => {
 
             {/* Renderiza as perguntas */}
             <View>
-                {perguntas.map((pergunta) => (
-                    <View key={pergunta.id} style={styles.listItem}>
-                        <Text style={styles.label}>
-                            {pergunta.titulo}
-                        </Text>
-                        <View style={styles.respostasContainer}>
-                            {pergunta.respostas.map((resposta, indexResposta) => (
-                                <TouchableOpacity
-                                    key={indexResposta}
-                                    style={styles.radioButtonContainer}
-                                    onPress={() => handleRespostaClick(codAval, pergunta.id, resposta.codAvalPeso)}
-                                >
-                                    <View style={[styles.radioButton, resposta.escolhida ? styles.radioButtonSelected : null]} />
-                                    <Text style={styles.radioButtonLabel}>
-                                        {resposta.texto}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-
-                        {capturedPhoto && (
-                            <TouchableOpacity onPress={handleOpenCamera}>
-                                <Image
-                                source={{ uri: capturedPhoto }}
-                                resizeMode="contain"
-                                style={{ width: '100%', height: '100%' }} // Ajuste conforme necessário
-                                />
-                                <MaterialCommunityIcons
-                                name="dots-horizontal-circle"
-                                size={20}
-                                color="red"
-                                // style={styles.closeIcon}
-                                />
-                            </TouchableOpacity>
-                            )}
-                            {!capturedPhoto && (
-                            <TouchableOpacity onPress={handleOpenCamera}>
-                                <MaterialCommunityIcons name="camera-plus-outline" size={50} color="black" />
-                            </TouchableOpacity>
-                            )}
-
-                        <CameraComponent
-                            visible={cameraVisible}
-                            setCameraVisible={setCameraVisible}
-                            onClose={handleCloseCamera}
-                            onPhotoTaken={handlePhotoTaken}
-                            capturedPhoto={capturedPhoto}
-                            codAval={codAval}
-                            codInd={pergunta.id}
-                        /> 
-                    </View>
+                {perguntas.map(({id, foto, titulo, respostas}) => (
+                    <Pergunta 
+                        key={id}
+                        foto={foto}
+                        titulo={titulo} 
+                        respostas={respostas} 
+                        codAval={codAval} 
+                        codInd={id}
+                        recarregaPerguntas={recarregaPerguntas}
+                    />
                 ))}
-
             </View>
 
             {/* Botão de "Voltar" movido para o fim da página */}

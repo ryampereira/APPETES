@@ -23,6 +23,7 @@ export const formataPerguntas = (dados) => {
       {
         id: 1,
         title: "pergunta 1",
+        foto: "url",
         respostas: [
           {
             texto: "resposta 1",
@@ -45,6 +46,7 @@ export const formataPerguntas = (dados) => {
           pergunta = {
             id: item.CodInd,
             titulo: item.DescrInd,
+            foto: item.PhotoURL,
             respostas: []
           };
           perguntas.push(pergunta);
@@ -72,6 +74,7 @@ export const buscaPerguntas = async (codAval) => {
               I.DescrInd, 
               R.DescrResAval, 
               A.CodAvalPeso,
+              AI.PhotoURL,
               CASE 
                   WHEN AI.CodAvalPeso IS NOT NULL THEN 1 
                   ELSE 0 
@@ -230,10 +233,19 @@ export const salvaFoto = async (photoUrl, codInd, codAval) => {
           WHERE CodInd = ? and CodAval = ?
         `,
         [photoUrl, codInd, codAval],
-        (_, results) => {
-          console.log(`Foto salva no banco de dados com indicador ${codInd} e avaliacao ${codAval}`)
+        (tx, results) => {
+          if (photoUrl){
+            console.log(`Foto com URL: ${photoUrl} salva no banco de dados com indicador ${codInd} e avaliacao ${codAval}`);
+          }
+          else{
+            console.log(`Foto com indicador ${codInd} e avaliacao ${codAval} excluída do banco de dados`);
+          }
+          resolve(results);
         },
-        (_, error) => reject(error)
+        (tx, error) => {
+          console.error("Erro ao atualizar a URL da foto no banco: ", error);
+          reject(error)
+        }
       );
     });
   });
