@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   deleteButton: {
-    backgroundColor: '#f44336', // Cor vermelha para exclusão
+    backgroundColor: '#f44336', 
     height: 50,
     borderColor: '#fff',
     borderWidth: 2,

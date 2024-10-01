@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Alert, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { buscaTodos, exclui } from '../services/dbservice';
 
 const ListagemAvaliacaoIQE = ({ navigation }) => {
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [avaliadores, setAvaliadores] = useState([]);
   const [etes, setETEs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(''); // Estado para armazenar a string de busca
+  const [filteredAvaliacoes, setFilteredAvaliacoes] = useState([]); // Estado para armazenar avaliações filtradas
 
   useEffect(() => {
     loadAvaliacoes();
     loadAvaliadores();
     loadETEs();
   }, []);
+
+  useEffect(() => {
+    filterAvaliacoesByETE(); // Chama a função de filtro toda vez que a string de busca ou a lista de avaliações muda
+  }, [searchQuery, avaliacoes]);
 
   async function loadAvaliacoes() {
     try {
@@ -55,6 +61,18 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     }
   }
 
+  function filterAvaliacoesByETE() {
+    if (searchQuery.trim() === '') {
+      setFilteredAvaliacoes(avaliacoes); // Se o campo de busca estiver vazio, mostrar todas as avaliações
+    } else {
+      const filtered = avaliacoes.filter(avaliacao => {
+        const ete = etes.find(e => e.CodETE === avaliacao.CodETE);
+        return ete && ete.NomeETE.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+      setFilteredAvaliacoes(filtered);
+    }
+  }
+
   async function handleDeleteAvaliacao(avId) {
     Alert.alert(
       'Confirmar Exclusão',
@@ -66,8 +84,8 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
           style: 'destructive', 
           onPress: async () => {
             try {
-              await exclui('avaliacaoiqe', avId); // Chama a função de exclusão
-              loadAvaliacoes(); // Atualiza a lista após a exclusão
+              await exclui('avaliacaoiqe', avId); 
+              loadAvaliacoes(); 
             } catch (error) {
               console.error('Erro ao excluir Avaliação:', error);
               Alert.alert('Erro', 'Erro ao excluir Avaliação. Veja o console para mais detalhes.');
@@ -82,36 +100,38 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     navigation.navigate('CadastroAvaliacaoIQE', { avId: avaliacao.CodAval });
   }
 
-  // Função para obter o nome do avaliador com base no código
   function getAvaliadorNome(codAvaliadorINEA) {
     const avaliador = avaliadores.find(av => av.CodAvaliador === codAvaliadorINEA);
     return avaliador ? avaliador.NomeAvaliador : 'N/A';
   }
 
-  // Função para obter o nome da ETE com base no código
   function getETENome(codETE) {
     const ete = etes.find(e => e.CodETE === codETE);
     return ete ? ete.NomeETE : 'N/A';
-  }
-
-  function goToQuestionario (codAval) {
-    navigation.navigate('Questionario', { codAval: codAval })
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Avaliações de IQE cadastradas</Text>
 
-      {avaliacoes.length === 0 ? (
+      {/* Campo de busca */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar por nome da ETE"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
+      {filteredAvaliacoes.length === 0 ? (
         <View style={styles.emptyView}>
-          <Text style={styles.emptyText}>Não há Avaliações cadastradas.</Text>
+          <Text style={styles.emptyText}>Não há Avaliações correspondentes.</Text>
         </View>
       ) : (
         <FlatList
-          data={avaliacoes}
+          data={filteredAvaliacoes}
           keyExtractor={(item) => item.CodAval ? item.CodAval.toString() : '0'}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => goToQuestionario(item.CodAval)} style={styles.listItem}>
+            <View style={styles.listItem}>
               <View style={{ flex: 1 }}>
                 <Text>{item.AnoBase ? item.AnoBase.toString() : 'N/A'} - {item.DataVistoria ? item.DataVistoria.toString() : 'N/A'}</Text>
                 <Text>Avaliador: {getAvaliadorNome(item.CodAvaliadorINEA)}</Text>
@@ -125,7 +145,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           )}
         />
       )}
@@ -151,9 +171,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 50,
-    marginTop: 80,
+    marginBottom: 20,
     color: '#381704',
+    marginTop: 90,
+  },
+  searchInput: {
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    marginBottom: 20,
   },
   listItem: {
     flexDirection: 'row',
@@ -169,8 +197,6 @@ const styles = StyleSheet.create({
   editButton: {
     backgroundColor: '#4CAF50',
     height: 50,
-    borderColor: '#fff',
-    borderWidth: 2,
     width: 80,
     borderRadius: 10,
     justifyContent: 'center',
@@ -180,8 +206,6 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: '#f44336',
     height: 50,
-    borderColor: '#fff',
-    borderWidth: 2,
     width: 80,
     borderRadius: 10,
     justifyContent: 'center',
@@ -194,8 +218,6 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#381704',
     height: 40,
-    borderColor: '#fff',
-    borderWidth: 2,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -213,3 +235,4 @@ const styles = StyleSheet.create({
 });
 
 export default ListagemAvaliacaoIQE;
+

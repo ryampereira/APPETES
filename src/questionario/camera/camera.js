@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, Image, Text, Modal, Alert } from 'react-native';
+import { View, TouchableOpacity, Image, Text, Modal, Alert, Button } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Sharing from 'expo-sharing';
 import * as ImageManipulator from 'expo-image-manipulator';
