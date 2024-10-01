@@ -89,15 +89,24 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
     return regex.test(dateString);
   }
 
+  function getETENome(codETE) {
+    const ete = etes.find(e => e.CodETE === codETE);
+    return ete ? ete.NomeETE : 'N/A';
+  }
+
   async function handleSaveAvaliacao() {
     if (validateFields()) {
       try {
         if (selectedAvaliacao) {
           await atualiza('avaliacaoiqe', selectedAvaliacao.CodAval, avaliacao);
+
+          navigation.navigate("Questionario", {codAval: selectedAvaliacao.CodAval, nomeETE: getETENome(selectedAvaliacao.CodETE)});
         } else {
-          await inclui('avaliacaoiqe', avaliacao);
+          const response = await inclui('avaliacaoiqe', avaliacao);
+
+          navigation.navigate("Questionario", {codAval: response.insertId, nomeETE: getETENome(avaliacao.CodETE)});
         }
-        navigation.navigate('ListagemAvaliacaoIQE');
+        // navigation.navigate('ListagemAvaliacaoIQE');
       } catch (error) {
         console.error('Erro ao salvar Avaliação:', error);
         Alert.alert('Erro', 'Erro ao salvar Avaliação.');
@@ -172,7 +181,7 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleSaveAvaliacao}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
+          <Text style={styles.buttonText}>Avaliar ETE</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

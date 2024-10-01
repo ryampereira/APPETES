@@ -250,3 +250,61 @@ export const salvaFoto = async (photoUrl, codInd, codAval) => {
     });
   });
 };
+
+export const pegaPontuacaoUsuario = async (codAval) => {
+  const db = await initializeDb();
+
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `
+          SELECT sum(Pontuacao) AS PontuacaoUsuario FROM avaliacaoiqeitem AII
+          INNER JOIN avaliacaopeso AP ON AII.CodAvalPeso = AP.CodAvalPeso
+          WHERE AII.CodAval = ?;
+        `,
+        [codAval],
+        (tx, results) => {
+          const items = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            items.push(results.rows.item(i));
+          }
+
+          console.log(`Pontuação do usuário na avaliação de código ${codAval}: ${items[0].PontuacaoUsuario}`);
+          resolve(items[0].PontuacaoUsuario);
+        },
+        (tx, error) => {
+          console.error("Erro ao pegar pontuação de usuário no banco: ", error);
+          reject(error)
+        }
+      );
+    });
+  });
+};
+
+export const pegaPontuacaoTotal = async () => {
+  const db = await initializeDb();
+
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `
+          SELECT sum(Pontuacao) AS PontuacaoTotal FROM avaliacaopeso WHERE EhMaxima = 1;
+        `,
+        [],
+        (tx, results) => {
+          const items = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            items.push(results.rows.item(i));
+          }
+
+          console.log(`Pontuação total: ${items[0].PontuacaoTotal}`);
+          resolve(items[0].PontuacaoTotal);
+        },
+        (tx, error) => {
+          console.error("Erro pegar pontuação de total no banco: ", error);
+          reject(error)
+        }
+      );
+    });
+  });
+};

@@ -100,6 +100,10 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     navigation.navigate('CadastroAvaliacaoIQE', { avId: avaliacao.CodAval });
   }
 
+  function handleEditIndicador(codAval, codETE) {
+    navigation.navigate("Questionario", {codAval: codAval, nomeETE: getETENome(codETE)});
+  }
+
   function getAvaliadorNome(codAvaliadorINEA) {
     const avaliador = avaliadores.find(av => av.CodAvaliador === codAvaliadorINEA);
     return avaliador ? avaliador.NomeAvaliador : 'N/A';
@@ -138,8 +142,11 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                 <Text>ETE: {getETENome(item.CodETE)}</Text>
               </View>
               <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.editButton} onPress={() => handleEditIndicador(item.CodAval, item.CodETE)}>
+                  <Text style={styles.buttonText}>Atualizar Indicadores</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.editButton} onPress={() => handleEditAvaliacao(item)}>
-                  <Text style={styles.buttonText}>Atualizar</Text>
+                  <Text style={styles.buttonText}>Atualizar dados básicos</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteAvaliacao(item.CodAval)}>
                   <Text style={styles.buttonText}>Excluir</Text>

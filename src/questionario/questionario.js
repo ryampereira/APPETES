@@ -8,7 +8,9 @@ import {
     formataPerguntas,
     buscaPerguntas,
     verificaExistenciaPerguntas,
-    criaPerguntaEmAvaliacaoItem
+    criaPerguntaEmAvaliacaoItem,
+    pegaPontuacaoUsuario,
+    pegaPontuacaoTotal
 } from "../services/questionarioservice";
 
 import Pergunta from "./pergunta/pergunta.js";
@@ -16,11 +18,18 @@ import Pergunta from "./pergunta/pergunta.js";
 const Questionario = ({ route }) => {
     const navigate = useNavigation();
     const [perguntas, setPerguntas] = useState([]);
+    const [pontuacaoTotal, setPontuacaoTotal] = useState(0);
+    const [pontuacaoUsuario, setPontuacaoUsuario] = useState(0);
+
     const codAval = route.params.codAval;
+    const nomeETE = route.params.nomeETE;
 
     const recarregaPerguntas = async () => {
         const resposta = await buscaPerguntas(codAval);
         const perguntasFormatadas = formataPerguntas(resposta);
+        const pontuacaoUsuario = await pegaPontuacaoUsuario(codAval);
+        
+        setPontuacaoUsuario(pontuacaoUsuario);
         setPerguntas(perguntasFormatadas);
     }
 
@@ -29,6 +38,9 @@ const Questionario = ({ route }) => {
             const resposta = await buscaPerguntas(codAval);
             const perguntasFormatadas = formataPerguntas(resposta);
 
+            const pontuacaoUsuario = await pegaPontuacaoUsuario(codAval);
+            const pontuacaoTotal = await pegaPontuacaoTotal();
+
             // Verifica se já existem perguntas inseridas para essa avaliação
             const perguntasExistentes = await verificaExistenciaPerguntas(codAval);
 
@@ -36,6 +48,8 @@ const Questionario = ({ route }) => {
                 await criaPerguntaEmAvaliacaoItem(codAval, perguntasFormatadas);
             }
 
+            setPontuacaoTotal(pontuacaoTotal);
+            setPontuacaoUsuario(pontuacaoUsuario);
             setPerguntas(perguntasFormatadas);
         } catch (err) {
             console.error(err);
@@ -53,7 +67,8 @@ const Questionario = ({ route }) => {
         <ScrollView style={styles.container}>
             {/* Título adicionado aqui */}
             <Text style={styles.header}>Avaliação da IQE</Text>
-
+            <Text>Nome da ETE: {nomeETE}</Text>
+            <Text>Pontuacao: {((pontuacaoUsuario/pontuacaoTotal) * 100).toFixed(2)}%</Text>
             {/* Renderiza as perguntas */}
             <View>
                 {perguntas.map(({id, foto, titulo, respostas}) => (
