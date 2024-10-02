@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 
    	cameraContainer : {
 		flexDirection: "row",
-		marginTop: "135%",
+		marginTop: "120%",
 		justifyContent: "center",
 		alignItems: "center"
    	},

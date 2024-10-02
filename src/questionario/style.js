@@ -7,15 +7,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   header: {
-    fontSize: 30, // Aumenta o tamanho da fonte
-    fontWeight: 'bold', // Torna o texto mais ousado
-    marginBottom: 20, // Reduz a margem inferior para compactar
-    marginTop: 60, // Ajusta a margem superior
+    fontSize: 30, 
+    fontWeight: 'bold', 
+    marginBottom: 5, // Distância do cabeçalho reduzida
+    marginTop: 15, 
     color: '#381704',
     textAlign: 'center',
-    borderBottomWidth: 2, // Adiciona uma linha abaixo
-    borderBottomColor: '#8B4513', // Cor da linha
-    paddingBottom: 10, // Adiciona espaço abaixo do texto
+    borderBottomWidth: 2, 
+    borderBottomColor: '#8B4513', 
+    paddingBottom: 10, 
+  },
+  nomeETE: {
+    fontSize: 15,
+    fontWeight: '600', 
+    color: '#381704', 
+    textAlign: 'center', 
+    marginBottom: 20,  
+    borderBottomColor: '#8B4513', 
+    paddingBottom: 10, 
   },
   button: {
     backgroundColor: '#381704',
@@ -31,7 +40,30 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
-  }
+  },
+  fixedPontuacaoContainer: {
+    backgroundColor: '#FAEBD7', // Tom de bege mais claro
+    paddingVertical: 8, // Padding reduzido
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginTop: 10, // Distância do topo ajustada
+    alignItems: 'center',
+    zIndex: 1, // Garante que a pontuação fique acima de outros elementos
+    position: 'absolute', // Mantém a pontuação fixa
+    top: 20, // Posição fixa do topo
+    left: 16,
+    right: 16,
+  },
+  fixedPontuacao: {
+    fontSize: 15, // Tamanho da fonte menor
+    color: '#381704',
+  },
+  scrollContainer: {
+    paddingBottom: 70, // Para garantir espaço na parte inferior
+    marginTop: 80, // Ajuste o valor se necessário para não sobrepor o cabeçalho
+  },
 });
 
 export default styles;
+
+

@@ -1,10 +1,9 @@
 import styles from "./style.js";
-
 import { useEffect, useState } from "react";
 import { View, TouchableOpacity, Text, ScrollView, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { 
+import {
     formataPerguntas,
     buscaPerguntas,
     verificaExistenciaPerguntas,
@@ -41,7 +40,6 @@ const Questionario = ({ route }) => {
             const pontuacaoUsuario = await pegaPontuacaoUsuario(codAval);
             const pontuacaoTotal = await pegaPontuacaoTotal();
 
-            // Verifica se já existem perguntas inseridas para essa avaliação
             const perguntasExistentes = await verificaExistenciaPerguntas(codAval);
 
             if (!perguntasExistentes) {
@@ -57,43 +55,45 @@ const Questionario = ({ route }) => {
         }
     };
 
-    
-
     useEffect(() => {
         fetchData();
     }, []);
 
     return (
-        <ScrollView style={styles.container}>
-            {/* Título adicionado aqui */}
-            <Text style={styles.header}>Avaliação da IQE</Text>
-            <Text>Nome da ETE: {nomeETE}</Text>
-            <Text>Pontuacao: {((pontuacaoUsuario/pontuacaoTotal) * 100).toFixed(2)}%</Text>
-            {/* Renderiza as perguntas */}
-            <View>
-                {perguntas.map(({id, foto, titulo, respostas}) => (
-                    <Pergunta 
-                        key={id}
-                        foto={foto}
-                        titulo={titulo} 
-                        respostas={respostas} 
-                        codAval={codAval} 
-                        codInd={id}
-                        recarregaPerguntas={recarregaPerguntas}
-                    />
-                ))}
+        <View style={styles.container}>
+            {/* Caixa da pontuação */}
+            <View style={styles.fixedPontuacaoContainer}>
+                <Text style={styles.fixedPontuacao}>
+                    Performance: {((pontuacaoUsuario / pontuacaoTotal) * 100).toFixed(2)}%
+                </Text>
             </View>
-
-            {/* Botão de "Voltar" movido para o fim da página */}
-            <TouchableOpacity style={styles.button} onPress={() => navigate.goBack()}>
-                <Text style={styles.buttonText}>Voltar</Text>
-            </TouchableOpacity>
-        </ScrollView>
+            
+            {/* ScrollView para o cabeçalho e perguntas */}
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Text style={styles.header}>Avaliação da ETE</Text>
+                <Text style={styles.nomeETE}>Nome da ETE: {nomeETE}</Text>
+                {/* Renderiza as perguntas */}
+                <View>
+                    {perguntas.map(({ id, foto, titulo, respostas }) => (
+                        <Pergunta 
+                            key={id}
+                            foto={foto}
+                            titulo={titulo} 
+                            respostas={respostas} 
+                            codAval={codAval} 
+                            codInd={id}
+                            recarregaPerguntas={recarregaPerguntas}
+                        />
+                    ))}
+                </View>
+                
+                {/* Botão de "Voltar" movido para o fim da página */}
+                <TouchableOpacity style={styles.button} onPress={() => navigate.goBack()}>
+                    <Text style={styles.buttonText}>Voltar</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </View>
     );
 };
 
 export default Questionario;
-
-
-
-

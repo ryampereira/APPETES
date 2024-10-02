@@ -5,13 +5,11 @@ import * as Sharing from 'expo-sharing';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Fontisto, Ionicons, FontAwesome } from '@expo/vector-icons';
 import { salvaFoto } from '../../services/questionarioservice';
-
 import styles from './style';
 
 const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, codAval }) => {
-
   const [camera, setCamera] = useState(null);
-  const [photo, setPhoto] = useState(null); // Mudança: inicializar photo como null
+  const [photo, setPhoto] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [facing, setFacing] = useState('back');
@@ -19,14 +17,10 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
   const photoRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
 
-  function flipCamera() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
   useEffect(() => {
     if (capturedPhoto) {
       photoRef.current = capturedPhoto;
-      setPhoto({ uri: capturedPhoto }); 
+      setPhoto({ uri: capturedPhoto });
       setShowPreview(true);
     }
   }, [capturedPhoto]);
@@ -42,12 +36,10 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
   };
 
   const compressImage = async (photoData) => {
-    const manipResult = await ImageManipulator.manipulateAsync(
-      photoData.uri,
-      [],
-      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-    );
-    return manipResult;
+    return await ImageManipulator.manipulateAsync(photoData.uri, [], {
+      compress: 0.7,
+      format: ImageManipulator.SaveFormat.JPEG,
+    });
   };
 
   const sharePhoto = async () => {
@@ -56,9 +48,7 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
     }
   };
 
-  const deletePhoto = () => {
-    setShowDeleteConfirmation(true);
-  };
+  const deletePhoto = () => setShowDeleteConfirmation(true);
 
   const confirmDeletePhoto = async () => {
     try {
@@ -66,7 +56,6 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
       setPhoto(null);
       photoRef.current = null;
       setShowPreview(false);
-      setShowDeleteConfirmation(false);
       onPhotoTaken("");
       handleClose();
     } catch (e) {
@@ -74,23 +63,10 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
     }
   };
 
-  const cancelDeletePhoto = () => {
-    setShowDeleteConfirmation(false);
-  };
-
-  const onCameraReady = () => {
-    if (previousFacing.current !== facing) {
-      previousFacing.current = facing;
-      setPhoto(null);
-      setShowPreview(false);
-    }
-  };
+  const cancelDeletePhoto = () => setShowDeleteConfirmation(false);
 
   const handleClose = async () => {
     if (camera && camera.status === 'READY') {
-      if (camera.isRecording) {
-        camera.stopRecording();
-      }
       await camera.unloadAsync();
       setCamera(null);
     }
@@ -99,8 +75,8 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
 
   const handleSavePhoto = async () => {
     if (photoRef.current || capturedPhoto) {
+      const photoToSave = capturedPhoto || photoRef.current;
       try {
-        const photoToSave = capturedPhoto ? capturedPhoto : photoRef.current;
         await salvaFoto(photoToSave, codInd, codAval);
         onPhotoTaken(photoToSave);
         handleClose();
@@ -115,61 +91,72 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ textAlign: 'center' }}>Precisamos da permissão de sua câmera</Text>
-        <Button onPress={() => requestPermission()} title="Permitir" />
+        <Button onPress={requestPermission} title="Permitir" />
       </View>
     );
   }
 
   return (
-    <Modal visible={visible} onRequestClose={() => handleClose()} animationType="slide">
+    <Modal visible={visible} onRequestClose={handleClose} animationType="slide">
       <View style={{ flex: 1 }}>
         {(capturedPhoto || showPreview) ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Image source={{ uri: (capturedPhoto ? capturedPhoto : photo) }} style={{ width: '90%', height: '50%', resizeMode: 'contain', borderRadius: 10 }} />
+            <Image 
+              source={{ uri: capturedPhoto || photo }} 
+              style={{ width: '90%', height: '50%', resizeMode: 'contain', borderRadius: 10 }} 
+            />
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.buttonPhoto} onPress={() => sharePhoto()}>
+              <TouchableOpacity style={styles.buttonPhoto} onPress={sharePhoto}>
                 <Text>Compartilhar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonPhoto} onPress={() => deletePhoto()}>
+              <TouchableOpacity style={styles.buttonPhoto} onPress={deletePhoto}>
                 <Text>Excluir</Text>
               </TouchableOpacity>
-              
             </View>
-
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.buttonSave} onPress={() => handleSavePhoto()}>
+              <TouchableOpacity style={styles.buttonSave} onPress={handleSavePhoto}>
                 <Text>Salvar</Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : (
-          <CameraView style={{ flex: 1 }} ref={(ref) => setCamera(ref)} facing={facing} onCameraReady={onCameraReady}>
+          <CameraView 
+            style={{ flex: 1 }} 
+            ref={setCamera} 
+            facing={facing} 
+            onCameraReady={() => {
+              if (previousFacing.current !== facing) {
+                previousFacing.current = facing;
+                setPhoto(null);
+                setShowPreview(false);
+              }
+            }}>
             <View style={styles.cameraContainer}>
-               <TouchableOpacity style={styles.buttonCamera} onPress={() => handleClose()}>
-                 <Ionicons name="close" size={40} color="white" />
-               </TouchableOpacity>
-               <TouchableOpacity style={styles.buttonCamera} onPress={() => takePicture()}>
-                 <FontAwesome name="dot-circle-o" size={80} color="white" />
-               </TouchableOpacity>
-               <TouchableOpacity style={styles.buttonCamera} onPress={() => flipCamera()}>
-                 <Fontisto name="arrow-return-right" size={30} color="white" />
-               </TouchableOpacity>
-             </View>
+              <TouchableOpacity style={styles.buttonCamera} onPress={handleClose}>
+                <Ionicons name="close" size={40} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonCamera} onPress={takePicture}>
+                <FontAwesome name="dot-circle-o" size={80} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonCamera} onPress={() => setFacing(current => (current === 'back' ? 'front' : 'back'))}>
+                <Fontisto name="arrow-return-right" size={30} color="white" />
+              </TouchableOpacity>
+            </View>
           </CameraView>
         )}
+
         <Modal visible={showDeleteConfirmation} transparent animationType="fade">
           <View style={styles.mContainer}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalText}>Tem certeza que deseja excluir a imagem?</Text>
               <View style={styles.buttonModalContainer}>
-                <TouchableOpacity style={styles.buttonPhoto} onPress={() => confirmDeletePhoto()}>
+                <TouchableOpacity style={styles.buttonPhoto} onPress={confirmDeletePhoto}>
                   <Text>Excluir</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonPhoto} onPress={() => cancelDeletePhoto()}>
+                <TouchableOpacity style={styles.buttonPhoto} onPress={cancelDeletePhoto}>
                   <Text>Cancelar</Text>
                 </TouchableOpacity>
               </View>

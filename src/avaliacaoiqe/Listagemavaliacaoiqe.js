@@ -6,8 +6,8 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [avaliadores, setAvaliadores] = useState([]);
   const [etes, setETEs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(''); // Estado para armazenar a string de busca
-  const [filteredAvaliacoes, setFilteredAvaliacoes] = useState([]); // Estado para armazenar avaliações filtradas
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredAvaliacoes, setFilteredAvaliacoes] = useState([]);
 
   useEffect(() => {
     loadAvaliacoes();
@@ -16,7 +16,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    filterAvaliacoesByETE(); // Chama a função de filtro toda vez que a string de busca ou a lista de avaliações muda
+    filterAvaliacoesByETE();
   }, [searchQuery, avaliacoes]);
 
   async function loadAvaliacoes() {
@@ -63,7 +63,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
 
   function filterAvaliacoesByETE() {
     if (searchQuery.trim() === '') {
-      setFilteredAvaliacoes(avaliacoes); // Se o campo de busca estiver vazio, mostrar todas as avaliações
+      setFilteredAvaliacoes(avaliacoes);
     } else {
       const filtered = avaliacoes.filter(avaliacao => {
         const ete = etes.find(e => e.CodETE === avaliacao.CodETE);
@@ -79,13 +79,13 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
       'Tem certeza que deseja excluir esta Avaliação?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
-          style: 'destructive', 
+        {
+          text: 'Excluir',
+          style: 'destructive',
           onPress: async () => {
             try {
-              await exclui('avaliacaoiqe', avId); 
-              loadAvaliacoes(); 
+              await exclui('avaliacaoiqe', avId);
+              loadAvaliacoes();
             } catch (error) {
               console.error('Erro ao excluir Avaliação:', error);
               Alert.alert('Erro', 'Erro ao excluir Avaliação. Veja o console para mais detalhes.');
@@ -101,7 +101,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
   }
 
   function handleEditIndicador(codAval, codETE) {
-    navigation.navigate("Questionario", {codAval: codAval, nomeETE: getETENome(codETE)});
+    navigation.navigate("Questionario", { codAval: codAval, nomeETE: getETENome(codETE) });
   }
 
   function getAvaliadorNome(codAvaliadorINEA) {
@@ -118,7 +118,6 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.header}>Avaliações de IQE cadastradas</Text>
 
-      {/* Campo de busca */}
       <TextInput
         style={styles.searchInput}
         placeholder="Buscar por nome da ETE"
@@ -142,13 +141,13 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                 <Text>ETE: {getETENome(item.CodETE)}</Text>
               </View>
               <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.editButton} onPress={() => handleEditIndicador(item.CodAval, item.CodETE)}>
+                <TouchableOpacity style={[styles.button, styles.updateButton]} onPress={() => handleEditIndicador(item.CodAval, item.CodETE)}>
                   <Text style={styles.buttonText}>Atualizar Indicadores</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEditAvaliacao(item)}>
+                <TouchableOpacity style={[styles.button, styles.updateDButton]} onPress={() => handleEditAvaliacao(item)}>
                   <Text style={styles.buttonText}>Atualizar dados básicos</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteAvaliacao(item.CodAval)}>
+                <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDeleteAvaliacao(item.CodAval)}>
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
               </View>
@@ -157,11 +156,11 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
         />
       )}
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CadastroAvaliacaoIQE')}>
+      <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('CadastroAvaliacaoIQE')}>
         <Text style={styles.buttonText}>Cadastrar Avaliação</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomeScreen')}>
+      <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('HomeScreen')}>
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
     </View>
@@ -191,38 +190,37 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   listItem: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    alignItems: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
-  editButton: {
-    backgroundColor: '#4CAF50',
-    height: 50,
-    width: 80,
+  button: {
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    paddingHorizontal: 2,
+    paddingVertical: 5,
+  },
+  updateButton: {
+    backgroundColor: '#FFA500',
+  },
+  updateDButton: {
+    backgroundColor: '#008000',
   },
   deleteButton: {
     backgroundColor: '#f44336',
-    height: 50,
-    width: 80,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    textAlign: 'center',
   },
-  button: {
+  mainButton: {
     backgroundColor: '#381704',
     height: 40,
     borderRadius: 10,
@@ -242,4 +240,3 @@ const styles = StyleSheet.create({
 });
 
 export default ListagemAvaliacaoIQE;
-
