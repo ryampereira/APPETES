@@ -6,8 +6,11 @@ const ListagemMunicipios = ({ navigation }) => {
   const [municipios, setMunicipios] = useState([]);
 
   useEffect(() => {
-    loadMunicipios();
-  }, []);
+    // Evita renderizar dados antigos quando voltando para trás na navigation stack
+    navigation.addListener('focus', () => {
+		  loadMunicipios();
+		});
+  }, [navigation]);
 
   async function loadMunicipios() {
     try {

@@ -10,10 +10,13 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
   const [filteredAvaliacoes, setFilteredAvaliacoes] = useState([]);
 
   useEffect(() => {
-    loadAvaliacoes();
-    loadAvaliadores();
-    loadETEs();
-  }, []);
+    // Evita renderizar dados antigos quando voltando para trás na navigation stack
+		navigation.addListener('focus', () => {
+		  loadAvaliacoes();
+      loadAvaliadores();
+      loadETEs();
+		});
+  }, [navigation]);
 
   useEffect(() => {
     filterAvaliacoesByETE();

@@ -6,8 +6,11 @@ const ListagemBaciahidro = ({ navigation }) => {
   const [bacias, setBacias] = useState([]);
 
   useEffect(() => {
-    loadBacias();
-  }, []);
+    // Evita renderizar dados antigos quando voltando para trás na navigation stack
+    navigation.addListener('focus', () => {
+		  loadBacias();
+		});
+  }, [navigation]);
 
   async function loadBacias() {
     try {

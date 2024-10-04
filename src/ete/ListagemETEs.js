@@ -6,7 +6,10 @@ const ListagemETEs = ({ navigation }) => {
   const [etes, setETEs] = useState([]);
 
   useEffect(() => {
-    loadETEs();
+    // Evita renderizar dados antigos quando voltando para trás na navigation stack
+    navigation.addListener('focus', () => {
+		  loadETEs();
+		});
   }, []);
 
   async function loadETEs() {

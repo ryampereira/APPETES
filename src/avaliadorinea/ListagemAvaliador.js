@@ -6,8 +6,11 @@ const ListagemAvaliadores = ({ navigation }) => {
   const [avaliadores, setAvaliadores] = useState([]);
 
   useEffect(() => {
-    loadAvaliadores();
-  }, []);
+    // Evita renderizar dados antigos quando voltando para trás na navigation stack
+    navigation.addListener('focus', () => {
+		  loadAvaliadores();
+		});
+  }, [navigation]);
 
   async function loadAvaliadores() {
     try {
