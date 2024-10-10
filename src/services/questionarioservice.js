@@ -24,6 +24,7 @@ export const formataPerguntas = (dados) => {
         id: 1,
         title: "pergunta 1",
         foto: "url",
+        link: "https://....",
         respostas: [
           {
             texto: "resposta 1",
@@ -47,6 +48,7 @@ export const formataPerguntas = (dados) => {
             id: item.CodInd,
             titulo: item.DescrInd,
             foto: item.PhotoURL,
+            link: item.LinkDoc,
             respostas: []
           };
           perguntas.push(pergunta);
@@ -75,6 +77,7 @@ export const buscaPerguntas = async (codAval) => {
               R.DescrResAval, 
               A.CodAvalPeso,
               AI.PhotoURL,
+              AI.LinkDoc,
               CASE 
                   WHEN AI.CodAvalPeso IS NOT NULL THEN 1 
                   ELSE 0 
@@ -299,6 +302,32 @@ export const pegaPontuacaoTotal = async () => {
 
           console.log(`Pontuação total: ${items[0].PontuacaoTotal}`);
           resolve(items[0].PontuacaoTotal);
+        },
+        (tx, error) => {
+          console.error("Erro pegar pontuação de total no banco: ", error);
+          reject(error)
+        }
+      );
+    });
+  });
+};
+
+export const salvaLink = async (link, codInd, codAval) => {
+  const db = await initializeDb();
+
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `
+          UPDATE avaliacaoiqeitem SET LinkDoc=?
+          WHERE CodInd = ? and CodAval = ?
+        `,
+        [link, codInd, codAval],
+        (tx, results) => {
+          
+          console.log(`Link ${link} salvo com sucesso para pergunta ${codInd} e avaliação ${codAval}`);
+
+          resolve(results);
         },
         (tx, error) => {
           console.error("Erro pegar pontuação de total no banco: ", error);

@@ -56,6 +56,37 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 20,
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 20,
+    width: "85%",
+    border: "1px solid black",
+    borderTop: "none",
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    flexDirection: "row",
+  },
+  buttonLink: {
+    justifyContent: "space-around",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: "#24a0ed",
+    width: "85%",
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    marginTop: 10,
+    marginBottom: 10,
+
+  },
+  linkText: {
+    textAlign: "center",
+    color: "#fff",
+    fontWeight: "bold",
+
   }
 });
 

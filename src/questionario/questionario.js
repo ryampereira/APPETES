@@ -74,10 +74,11 @@ const Questionario = ({ route }) => {
                 <Text style={styles.nomeETE}>Nome da ETE: {nomeETE}</Text>
                 {/* Renderiza as perguntas */}
                 <View>
-                    {perguntas.map(({ id, foto, titulo, respostas }) => (
+                    {perguntas.map(({ id, foto, link, titulo, respostas }) => (
                         <Pergunta 
                             key={id}
                             foto={foto}
+                            linkUrl={link}
                             titulo={titulo} 
                             respostas={respostas} 
                             codAval={codAval} 
