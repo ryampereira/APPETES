@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, Image, Text, Modal, Alert, Button } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { View, TouchableOpacity, Image, Text, Modal, Alert } from 'react-native';
+import { CameraView } from 'expo-camera';
 import * as Sharing from 'expo-sharing';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as MediaLibrary from 'expo-media-library';
+
 import { Fontisto, Ionicons, FontAwesome } from '@expo/vector-icons';
 import { salvaFoto } from '../../services/questionarioservice';
 import styles from './style';
+
+const APP_NAME = 'APPETES';
 
 const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, codAval }) => {
   const [camera, setCamera] = useState(null);
@@ -15,7 +19,6 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
   const [facing, setFacing] = useState('back');
   const previousFacing = useRef(facing);
   const photoRef = useRef(null);
-  const [permission, requestPermission] = useCameraPermissions();
 
   useEffect(() => {
     if (capturedPhoto) {
@@ -56,6 +59,7 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
       setPhoto(null);
       photoRef.current = null;
       setShowPreview(false);
+      setShowDeleteConfirmation(false);
       onPhotoTaken("");
       handleClose();
     } catch (e) {
@@ -76,28 +80,26 @@ const Camera = ({ visible, closeCamera, onPhotoTaken, capturedPhoto, codInd, cod
   const handleSavePhoto = async () => {
     if (photoRef.current || capturedPhoto) {
       const photoToSave = capturedPhoto || photoRef.current;
+
       try {
-        await salvaFoto(photoToSave, codInd, codAval);
-        onPhotoTaken(photoToSave);
+        // 1. Salvar na galeria do dispositivo
+        const asset = await MediaLibrary.createAssetAsync(photoToSave);
+        const assetUri = `file:///storage/emulated/0/Pictures/${APP_NAME}/${asset.filename}`;
+
+        await MediaLibrary.createAlbumAsync(APP_NAME, asset, false);  // Salva no álbum
+
+        // 2. Salvar a URL da foto no banco de dados
+        await salvaFoto(assetUri, codInd, codAval);
+
+        // 3. Notificar o callback
+        onPhotoTaken(assetUri);
         handleClose();
       } catch (e) {
+        console.error(e);
         Alert.alert("Erro", "Erro ao salvar imagem");
       }
     }
   };
-
-  if (!permission) {
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ textAlign: 'center' }}>Precisamos da permissão de sua câmera</Text>
-        <Button onPress={requestPermission} title="Permitir" />
-      </View>
-    );
-  }
 
   return (
     <Modal visible={visible} onRequestClose={handleClose} animationType="slide">

@@ -1,7 +1,8 @@
 import styles from "./style.js";
 import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, ScrollView, Alert } from "react-native";
+import { View, TouchableOpacity, Text, ScrollView, Alert, Button } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useCameraPermissions } from "expo-camera";
 
 import {
     formataPerguntas,
@@ -13,12 +14,15 @@ import {
 } from "../services/questionarioservice";
 
 import Pergunta from "./pergunta/pergunta.js";
+import * as MediaLibrary from 'expo-media-library';
 
 const Questionario = ({ route }) => {
     const navigate = useNavigation();
     const [perguntas, setPerguntas] = useState([]);
     const [pontuacaoTotal, setPontuacaoTotal] = useState(0);
     const [pontuacaoUsuario, setPontuacaoUsuario] = useState(0);
+    const [permission, requestPermission] = useCameraPermissions();
+    const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
 
     const codAval = route.params.codAval;
     const nomeETE = route.params.nomeETE;
@@ -58,6 +62,32 @@ const Questionario = ({ route }) => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    if (!permission) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ textAlign: 'center' }}>Sem permissões necessárias</Text>
+            </View>
+        );
+    }
+    
+    if (!permission.granted) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ textAlign: 'center' }}>Precisamos da permissão de sua câmera</Text>
+                <Button onPress={requestPermission} title="Permitir" />
+            </View>
+        );
+    }
+
+    if (!mediaLibraryPermission || !mediaLibraryPermission.granted) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ textAlign: 'center' }}>Precisamos da permissão para salvar fotos na galeria</Text>
+                <Button onPress={requestMediaLibraryPermission} title="Permitir" />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
