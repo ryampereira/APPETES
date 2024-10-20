@@ -16,6 +16,8 @@ import CadastroETE from './src/ete/ete';
 import CadastroAvaliacaoIQE from './src/avaliacaoiqe/avaliacaoiqe';
 import ListagemAvaliacaoIQE from './src/avaliacaoiqe/Listagemavaliacaoiqe';
 import Questionario from './src/questionario/questionario';
+import Dashboard from './src/dashboard';
+import DashboardHistorico from './src/dashboardHistorico';
 
 
 const Stack = createNativeStackNavigator();
@@ -61,7 +63,7 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="CadastroAvaliador" 
+            name="CadastroAvaliador"
             component={CadastroAvaliador}
             options={{ headerShown: false }}
           />
@@ -71,23 +73,33 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="CadastroETE" 
+            name="CadastroETE"
             component={CadastroETE}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="ListagemAvaliacaoIQE" 
+            name="ListagemAvaliacaoIQE"
             component={ListagemAvaliacaoIQE}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="CadastroAvaliacaoIQE" 
+            name="CadastroAvaliacaoIQE"
             component={CadastroAvaliacaoIQE}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Questionario" 
+            name="Questionario"
             component={Questionario}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DashboardHistorico"
+            component={DashboardHistorico}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

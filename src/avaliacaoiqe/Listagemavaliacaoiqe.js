@@ -11,11 +11,11 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
 
   useEffect(() => {
     // Evita renderizar dados antigos quando voltando para trás na navigation stack
-		navigation.addListener('focus', () => {
-		  loadAvaliacoes();
+    navigation.addListener('focus', () => {
+      loadAvaliacoes();
       loadAvaliadores();
       loadETEs();
-		});
+    });
   }, [navigation]);
 
   useEffect(() => {
@@ -25,6 +25,8 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
   async function loadAvaliacoes() {
     try {
       const data = await buscaTodos('avaliacaoiqe');
+      console.log('Avaliações carregadas:', data);
+
       if (Array.isArray(data)) {
         setAvaliacoes(data);
       } else {
@@ -107,6 +109,11 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
     navigation.navigate("Questionario", { codAval: codAval, nomeETE: getETENome(codETE) });
   }
 
+  function handleViewDashboard(codAval) {
+    console.log('Navegando para Dashboard com codAval:', codAval);
+    navigation.navigate('Dashboard', { codAval });
+  }
+
   function getAvaliadorNome(codAvaliadorINEA) {
     const avaliador = avaliadores.find(av => av.CodAvaliador === codAvaliadorINEA);
     return avaliador ? avaliador.NomeAvaliador : 'N/A';
@@ -152,6 +159,14 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDeleteAvaliacao(item.CodAval)}>
                   <Text style={styles.buttonText}>Excluir</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                  console.log("Navegando para Dashboard com codAval: ", item.CodAval);
+                  navigation.navigate('Dashboard', { codAval: item.CodAval });
+                }}>
+                  <Text>
+                    Ver Dashboard
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -8,8 +8,8 @@ const ListagemETEs = ({ navigation }) => {
   useEffect(() => {
     // Evita renderizar dados antigos quando voltando para trás na navigation stack
     navigation.addListener('focus', () => {
-		  loadETEs();
-		});
+      loadETEs();
+    });
   }, []);
 
   async function loadETEs() {
@@ -32,9 +32,9 @@ const ListagemETEs = ({ navigation }) => {
       'Tem certeza que deseja excluir esta ETE?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
-          style: 'destructive', 
+        {
+          text: 'Excluir',
+          style: 'destructive',
           onPress: async () => {
             try {
               await exclui('ete', eteId); // Chama a função de exclusão
@@ -84,6 +84,10 @@ const ListagemETEs = ({ navigation }) => {
         />
       )}
 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DashboardHistorico')}>
+        <Text style={styles.buttonText}>Dashboard Histórico</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CadastroETE')}>
         <Text style={styles.buttonText}>Cadastrar ETE</Text>
       </TouchableOpacity>
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   deleteButton: {
-    backgroundColor: '#f44336', 
+    backgroundColor: '#f44336',
     height: 50,
     borderColor: '#fff',
     borderWidth: 2,

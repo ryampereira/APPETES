@@ -146,3 +146,68 @@ export const buscaTodos = async (table) => {
     });
   });
 };
+
+// Dashboard
+export const fetchScores = async (codAval) => {
+  const db = await initializeDb();
+  return new Promise((resolve, reject) => {
+    console.log(`Buscando pontuações para codAval: ${codAval}`);
+
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT * FROM avaliacaoiqeitem WHERE CodAval = ?`,
+        [codAval],
+        (tx, results) => {
+          console.log('Dados retornados:', results.rows._array);
+          const items = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            items.push(results.rows.item(i));
+          }
+          resolve(items);
+        },
+        (tx, error) => {
+          console.error('Erro ao buscar pontuações:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+// Dashboard Histórico
+
+export const fetchHistory = async () => {
+  const db = await initializeDb();
+  return new Promise((resolve, reject) => {
+    console.log('Buscando histórico de avaliações');
+
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT a.CodETE, e.nomeETE AS nomeETE, SUM(ap.Pontuacao) as totalPoints
+         FROM avaliacaoiqe a
+         JOIN avaliacaoiqeitem ai ON a.CodAval = ai.CodAval
+         JOIN avaliacaopeso ap ON ai.CodAvalPeso = ap.CodAvalPeso
+         JOIN ETE e ON a.CodETE = e.CodETE
+         GROUP BY a.CodETE, e.nomeETE
+         ORDER BY a.CodETE`,
+        [],
+        (tx, results) => {
+          console.log('Dados retornados:', results.rows._array);
+          const historicalData = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            historicalData.push({
+              codETE: results.rows.item(i).CodETE,
+              nomeETE: results.rows.item(i).nomeETE, // Ajuste para "nomeETE"
+              totalPoints: results.rows.item(i).totalPoints,
+            });
+          }
+          resolve(historicalData);
+        },
+        (tx, error) => {
+          console.error('Erro ao buscar histórico de avaliações:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
