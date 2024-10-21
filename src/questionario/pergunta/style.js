@@ -37,20 +37,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   radioButtonSelected: {
-    borderColor: '#8B4513', // Cor marrom para a seleção
-    backgroundColor: '#8B4513', // Cor marrom quando selecionado
+    borderColor: '#8B4513',
+    backgroundColor: '#8B4513',
   },
   radioButtonLabel: {
     fontSize: 16,
     color: '#381704',
   },
   buttonCamera: {
-    border: "2px solid black",
-    width: 150,
-    height: 150,
-    // margin: 10,
+    borderWidth: 2,
+    borderColor: '#381704',
+    width: 60,
+    height: 60,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center", // Centraliza o conteúdo
+    borderRadius: 10,
+    marginRight: 500, // Espaço entre o botão da câmera e o próximo
+    marginTop: -60,
+  },
+  cameraIcon: {
+    width: 20, // Largura do ícone da câmera
+    height: 60, // Altura do ícone da câmera
   },
   closeIcon: {
     position: "absolute",
@@ -59,35 +66,37 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "center", // Centraliza os botões
     alignItems: "center",
-    gap: 20,
-    width: "85%",
-    border: "1px solid black",
-    borderTop: "none",
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
     flexDirection: "row",
+    width: "100%",
+    marginTop: 50,
   },
   buttonLink: {
-    justifyContent: "space-around",
+    justifyContent: "center",
     alignItems: "center",
-    flexDirection: "row",
     backgroundColor: "#24a0ed",
-    width: "85%",
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    marginTop: 10,
-    marginBottom: 10,
-
+    height: 60, // Certifique-se que a altura do botão link é a mesma do botão câmera
+    borderRadius: 10,
+    paddingVertical: 1,
+    paddingHorizontal: 15,
+    marginLeft: 100,
+    marginTop: 20,
   },
   linkText: {
     textAlign: "center",
     color: "#fff",
     fontWeight: "bold",
-
   }
 });
 
 export default styles;
+
+
+
+
+
+
+
+
+

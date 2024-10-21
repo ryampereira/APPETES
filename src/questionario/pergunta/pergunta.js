@@ -163,7 +163,7 @@ const Pergunta = ({ titulo, foto, linkUrl, respostas, codAval, codInd, recarrega
                 modalVisible={helpModalVisible}
                 setModalVisible={setHelpModalVisible}
             />
-        </View>
+          </View>
     )
 }
 

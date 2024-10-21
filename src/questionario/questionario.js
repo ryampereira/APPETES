@@ -117,8 +117,13 @@ const Questionario = ({ route }) => {
                         />
                     ))}
                 </View>
-                
-                {/* Botão de "Voltar" movido para o fim da página */}
+
+                {/* Botão de "Salvar" */}
+                <TouchableOpacity style={styles.button} onPress={() => navigate.navigate('ListagemAvaliacaoIQE')}>
+                    <Text style={styles.buttonText}>Salvar</Text>
+                </TouchableOpacity>
+
+                {/* Botão de "Voltar" */}
                 <TouchableOpacity style={styles.button} onPress={() => navigate.goBack()}>
                     <Text style={styles.buttonText}>Voltar</Text>
                 </TouchableOpacity>
@@ -128,3 +133,4 @@ const Questionario = ({ route }) => {
 };
 
 export default Questionario;
+

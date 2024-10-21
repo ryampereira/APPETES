@@ -160,13 +160,11 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                 <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDeleteAvaliacao(item.CodAval)}>
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity style={styles.dashboardButton} onPress={() => {
                   console.log("Navegando para Dashboard com codAval: ", item.CodAval);
                   navigation.navigate('Dashboard', { codAval: item.CodAval });
                 }}>
-                  <Text>
-                    Ver Dashboard
-                  </Text>
+                  <Text style={styles.dashboardButtonText}>👁️</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -225,6 +223,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 2,
     paddingVertical: 5,
+  },
+  dashboardButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#381704',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: 25, 
+    top: -65, 
+  },
+  dashboardButtonText: {
+    color: '#fff',
+    fontSize: 25, 
   },
   updateButton: {
     backgroundColor: '#FFA500',
