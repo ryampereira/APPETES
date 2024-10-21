@@ -1,42 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory-native';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { fetchHistory } from '../services/dbservice';
 
-const DashboardHistorico = () => {
-    const [pointsByETE, setPointsByETE] = useState([]);
+const DashboardHistorico = ({ route }) => {
+    const { codETE } = route.params;
+    const [historicalData, setHistoricalData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadPointsByETE = async () => {
+        const loadHistoricalScores = async () => {
             try {
-                const data = await fetchHistory();
-                setPointsByETE(data);
-                console.log("Pontuações por ETE:", data);
+                const data = await fetchHistory(codETE);
+                setHistoricalData(data);
+                console.log("Dados históricos:", data);
             } catch (error) {
-                console.error('Erro ao carregar pontuações por ETE:', error);
+                console.error('Erro ao carregar histórico de pontuações:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        loadPointsByETE();
-    }, []);
+        loadHistoricalScores();
+    }, [codETE]);
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text>Carregando histórico...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Pontuação por ETE</Text>
+            <Text style={styles.title}>Histórico de Avaliações</Text>
             <VictoryChart
                 padding={{ top: 20, bottom: 60, left: 50, right: 20 }}
-                domainPadding={{ x: [20, 20], y: [0, 0] }}
+                domainPadding={{ x: [50, 50], y: [0, 0] }}
             >
                 <VictoryAxis
-                    tickFormat={pointsByETE.map(item => item.nomeETE)}
+                    tickFormat={historicalData.map(item => item.dataVistoria)}
                     style={{
                         tickLabels: { fontSize: 10, angle: 45, textAnchor: 'start' }
                     }}
                 />
-                <VictoryAxis dependentAxis tickFormat={(x) => `${x}`} />
+                <VictoryAxis
+                    dependentAxis
+                    tickFormat={(x) => `${x}`}
+                />
                 <VictoryBar
-                    data={pointsByETE}
-                    x="nomeETE"
+                    data={historicalData}
+                    x="dataVistoria"
                     y="totalPoints"
                     barWidth={20}
                     style={{ data: { fill: "#4caf50" } }}
@@ -60,6 +76,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         color: '#333',
     },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 });
 
 export default DashboardHistorico;

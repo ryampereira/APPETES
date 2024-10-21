@@ -176,28 +176,27 @@ export const fetchScores = async (codAval) => {
 
 // Dashboard Histórico
 
-export const fetchHistory = async () => {
+export const fetchHistory = async (codETE) => {
   const db = await initializeDb();
   return new Promise((resolve, reject) => {
-    console.log('Buscando histórico de avaliações');
+    console.log('Buscando histórico de avaliações para a ETE:', codETE);
 
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT a.CodETE, e.nomeETE AS nomeETE, SUM(ap.Pontuacao) as totalPoints
+        `SELECT a.DataVistoria, SUM(ap.Pontuacao) as totalPoints
          FROM avaliacaoiqe a
          JOIN avaliacaoiqeitem ai ON a.CodAval = ai.CodAval
          JOIN avaliacaopeso ap ON ai.CodAvalPeso = ap.CodAvalPeso
-         JOIN ETE e ON a.CodETE = e.CodETE
-         GROUP BY a.CodETE, e.nomeETE
-         ORDER BY a.CodETE`,
-        [],
+         WHERE a.CodETE = ?
+         GROUP BY a.DataVistoria
+         ORDER BY a.DataVistoria`,
+        [codETE],
         (tx, results) => {
           console.log('Dados retornados:', results.rows._array);
           const historicalData = [];
           for (let i = 0; i < results.rows.length; i++) {
             historicalData.push({
-              codETE: results.rows.item(i).CodETE,
-              nomeETE: results.rows.item(i).nomeETE, // Ajuste para "nomeETE"
+              dataVistoria: results.rows.item(i).DataVistoria,
               totalPoints: results.rows.item(i).totalPoints,
             });
           }

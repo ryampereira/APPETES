@@ -53,6 +53,10 @@ const ListagemETEs = ({ navigation }) => {
     navigation.navigate('CadastroETE', { eteId: ete.CodETE });
   }
 
+  function handleDashboardHistorico(codETE) {
+    navigation.navigate('DashboardHistorico', { codETE });
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>ETEs cadastradas</Text>
@@ -78,15 +82,14 @@ const ListagemETEs = ({ navigation }) => {
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteETE(item.CodETE)}>
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDashboardHistorico(item.CodETE)}>
+                  <Text style={styles.buttonText}>Dashboard Histórico</Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
         />
       )}
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DashboardHistorico')}>
-        <Text style={styles.buttonText}>Dashboard Histórico</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CadastroETE')}>
         <Text style={styles.buttonText}>Cadastrar ETE</Text>
