@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { buscaTodos, exclui } from '../services/dbservice'; // Certifique-se de que a função exclui está disponível em dbservice
+import { buscaTodos, exclui } from '../services/dbservice';
 
 const ListagemETEs = ({ navigation }) => {
   const [etes, setETEs] = useState([]);
 
   useEffect(() => {
-    // Evita renderizar dados antigos quando voltando para trás na navigation stack
     navigation.addListener('focus', () => {
       loadETEs();
     });
@@ -37,8 +36,8 @@ const ListagemETEs = ({ navigation }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await exclui('ete', eteId); // Chama a função de exclusão
-              loadETEs(); // Atualiza a lista após a exclusão
+              await exclui('ete', eteId);
+              loadETEs();
             } catch (error) {
               console.error('Erro ao excluir ETE:', error);
               Alert.alert('Erro', 'Erro ao excluir ETE. Veja o console para mais detalhes.');
@@ -82,8 +81,8 @@ const ListagemETEs = ({ navigation }) => {
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteETE(item.CodETE)}>
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDashboardHistorico(item.CodETE)}>
-                  <Text style={styles.buttonText}>Dashboard Histórico</Text>
+                <TouchableOpacity style={styles.dashboardButton} onPress={() => handleDashboardHistorico(item.CodETE)}>
+                  <Text style={styles.buttonText}>Dashboard</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -147,6 +146,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 10, // Adiciona espaçamento igual
+  },
+  dashboardButton: {
+    backgroundColor: '#FFA500', // Cor amarela
+    height: 50,
+    borderColor: '#fff',
+    borderWidth: 2,
+    width: 80,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10, // Adiciona espaçamento igual
   },
   buttonText: {
     color: '#fff',
@@ -174,6 +185,7 @@ const styles = StyleSheet.create({
 });
 
 export default ListagemETEs;
+
 
 
 

@@ -151,28 +151,49 @@ export const buscaTodos = async (table) => {
 export const fetchScores = async (codAval) => {
   const db = await initializeDb();
   return new Promise((resolve, reject) => {
-    console.log(`Buscando pontuações para codAval: ${codAval}`);
+    console.log(`Buscando pontuações e pontuação máxima para codAval: ${codAval}`);
 
     db.transaction(tx => {
+      const query = `
+        SELECT 
+          avaliacaoiqeitem.CodInd, 
+          avaliacaoiqeitem.CodAvalPeso, 
+          peso.Pontuacao AS PontuacaoObtida,
+          (SELECT MAX(p.Pontuacao) 
+           FROM avaliacaopeso p 
+           WHERE p.CodInd = avaliacaoiqeitem.CodInd AND p.EhMaxima = 1
+          ) AS PontuacaoMaxima
+        FROM avaliacaoiqeitem 
+        LEFT JOIN avaliacaopeso peso 
+          ON avaliacaoiqeitem.CodInd = peso.CodInd AND avaliacaoiqeitem.CodAvalPeso = peso.CodAvalPeso
+        WHERE avaliacaoiqeitem.CodAval = ?
+      `;
+
       tx.executeSql(
-        `SELECT * FROM avaliacaoiqeitem WHERE CodAval = ?`,
+        query,
         [codAval],
         (tx, results) => {
           console.log('Dados retornados:', results.rows._array);
           const items = [];
           for (let i = 0; i < results.rows.length; i++) {
-            items.push(results.rows.item(i));
+            items.push({
+              CodInd: results.rows.item(i).CodInd || 0,  // Adiciona valor padrão
+              CodAvalPeso: results.rows.item(i).CodAvalPeso !== null ? results.rows.item(i).CodAvalPeso : 0,
+              PontuacaoMaxima: results.rows.item(i).PontuacaoMaxima || 0,
+            });
           }
           resolve(items);
         },
         (tx, error) => {
-          console.error('Erro ao buscar pontuações:', error);
+          console.error('Erro ao buscar pontuações e pontuação máxima:', error);
           reject(error);
         }
       );
     });
   });
 };
+
+
 
 // Dashboard Histórico
 
@@ -204,6 +225,92 @@ export const fetchHistory = async (codETE) => {
         },
         (tx, error) => {
           console.error('Erro ao buscar histórico de avaliações:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+// Função para buscar o nome da ETE pelo CodAval
+export const fetchEteNameByCodAval = async (codAval) => {
+  const db = await initializeDb();
+  return new Promise((resolve, reject) => {
+    console.log('Buscando nome da ETE para a avaliação:', codAval);
+
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT e.NomeETE
+         FROM ete e
+         JOIN avaliacaoiqe a ON e.CodETE = a.CodETE
+         WHERE a.CodAval = ?`,
+        [codAval],
+        (tx, results) => {
+          if (results.rows.length > 0) {
+            const nomeETE = results.rows.item(0).NomeETE;
+            resolve(nomeETE);
+          } else {
+            resolve(null); // Se não encontrar
+          }
+        },
+        (tx, error) => {
+          console.error('Erro ao buscar nome da ETE:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const fetchDataVistoriabyCodAval = async (codAval) => {
+  const db = await initializeDb();
+  return new Promise((resolve, reject) => {
+    console.log('Buscando data vistoria para a avaliação:', codAval);
+
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT a.DataVistoria
+         FROM avaliacaoiqe a
+         WHERE a.CodAval = ?`,  // Removido o JOIN
+        [codAval],
+        (tx, results) => {
+          if (results.rows.length > 0) {
+            const DataVistoria = results.rows.item(0).DataVistoria;
+            resolve(DataVistoria);
+          } else {
+            resolve(null); // Se não encontrar
+          }
+        },
+        (tx, error) => {
+          console.error('Erro ao buscar data vistoria:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const fetchEteNameByCodETE = async (codETE) => {
+  const db = await initializeDb();
+  return new Promise((resolve, reject) => {
+    console.log('Buscando nome da ETE para o CodETE:', codETE);
+
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT NomeETE
+         FROM ete 
+         WHERE CodETE = ?`,
+        [codETE],
+        (tx, results) => {
+          if (results.rows.length > 0) {
+            const nomeETE = results.rows.item(0).NomeETE;
+            resolve(nomeETE);
+          } else {
+            resolve(null); // Se não encontrar
+          }
+        },
+        (tx, error) => {
+          console.error('Erro ao buscar nome da ETE:', error);
           reject(error);
         }
       );

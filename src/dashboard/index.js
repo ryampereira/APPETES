@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from 'victory-native';
-import { fetchScores } from '../services/dbservice';
+import { fetchScores, fetchEteNameByCodAval, fetchDataVistoriabyCodAval } from '../services/dbservice'; // Importando a função
 
 const Dashboard = ({ navigation, route }) => {
     const { codAval } = route.params;
     const [scores, setScores] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [eteName, setEteName] = useState(''); 
+    const [DataVistoria, setDataVistoria] = useState('')
 
     useEffect(() => {
         console.log('codAval recebido na DashboardScreen:', codAval);
 
-        const getScores = async () => {
+        const getScoresAndEteName = async () => {
             try {
                 const scoresData = await fetchScores(codAval);
                 console.log('Pontuações obtidas:', scoresData);
 
-                // formato esperado pelo VictoryBar
+                // Busca o nome da ETE
+                const nomeETE = await fetchEteNameByCodAval(codAval);
+                setEteName(nomeETE || 'ETE não encontrada'); // Se não encontrar, mostrar mensagem padrão
+
+                const DataVistoria = await fetchDataVistoriabyCodAval(codAval);
+                setDataVistoria(DataVistoria || 'Ano vistoria não encontrada');
+
+                // Formatação dos dados esperada pelo VictoryBar
                 const formattedScores = scoresData.map((item) => ({
                     x: item.CodInd,
                     y: item.CodAvalPeso !== null ? item.CodAvalPeso : 0,
@@ -24,13 +33,13 @@ const Dashboard = ({ navigation, route }) => {
 
                 setScores(formattedScores);
             } catch (error) {
-                console.error('Erro ao buscar pontuações:', error);
+                console.error('Erro ao buscar pontuações ou nome da ETE:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        getScores();
+        getScoresAndEteName();
     }, [codAval]);
 
     if (loading) {
@@ -44,7 +53,7 @@ const Dashboard = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Pontuações da Avaliação {codAval}</Text>
+            <Text style={styles.title}>Dashboard da {eteName} em {DataVistoria}</Text>
             <VictoryChart theme={VictoryTheme.material} domainPadding={20}>
                 <VictoryAxis
                     label="Perguntas"
@@ -80,7 +89,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#fff',
-        justifyContent: 'center', // Centraliza o conteúdo verticalmente
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     title: {
         fontSize: 18,
@@ -94,23 +104,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     backButton: {
-        marginTop: 20,
-        backgroundColor: '#381704', // Cor do botão
+        backgroundColor: '#381704',
         borderRadius: 5,
-        paddingVertical: 8, // Diminuindo a altura do botão
+        paddingVertical: 10,
         paddingHorizontal: 20,
-        width: '100%', // Preenche a largura da tela
-        alignSelf: 'center', // Centraliza horizontalmente
-        position: 'absolute', // Posiciona o botão na parte inferior
-        bottom: 20, // Distância do fundo da tela
-    },    
+        marginTop: 20,
+        width: '100%',
+        position: 'absolute',
+        bottom: 20,
+        alignItems: 'center',
+    },
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        textAlign: 'center', // Centraliza o texto dentro do botão
+        textAlign: 'center',
     },
 });
 
 export default Dashboard;
+
+
 
 
