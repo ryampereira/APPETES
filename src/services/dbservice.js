@@ -148,51 +148,53 @@ export const buscaTodos = async (table) => {
 };
 
 // Dashboard
+ // dbservice.js
 export const fetchScores = async (codAval) => {
   const db = await initializeDb();
   return new Promise((resolve, reject) => {
-    console.log(`Buscando pontuações e pontuação máxima para codAval: ${codAval}`);
+    console.log(`Buscando pontuação percentual para codAval: ${codAval}`);
 
     db.transaction(tx => {
       const query = `
         SELECT 
-          avaliacaoiqeitem.CodInd, 
-          avaliacaoiqeitem.CodAvalPeso, 
+          iqeitem.CodInd, 
           peso.Pontuacao AS PontuacaoObtida,
-          (SELECT MAX(p.Pontuacao) 
+          (SELECT MAX(p.Pontuacao)
            FROM avaliacaopeso p 
-           WHERE p.CodInd = avaliacaoiqeitem.CodInd AND p.EhMaxima = 1
+           WHERE p.CodInd = iqeitem.CodInd AND p.EhMaxima = 1
           ) AS PontuacaoMaxima
-        FROM avaliacaoiqeitem 
+        FROM avaliacaoiqeitem iqeitem
         LEFT JOIN avaliacaopeso peso 
-          ON avaliacaoiqeitem.CodInd = peso.CodInd AND avaliacaoiqeitem.CodAvalPeso = peso.CodAvalPeso
-        WHERE avaliacaoiqeitem.CodAval = ?
+          ON iqeitem.CodInd = peso.CodInd AND iqeitem.CodAvalPeso = peso.CodAvalPeso
+        WHERE iqeitem.CodAval = ?
       `;
 
       tx.executeSql(
         query,
         [codAval],
         (tx, results) => {
-          console.log('Dados retornados:', results.rows._array);
           const items = [];
           for (let i = 0; i < results.rows.length; i++) {
+            const item = results.rows.item(i);
+            const pontuacaoObtida = item.PontuacaoObtida || 0;
+            const pontuacaoMaxima = item.PontuacaoMaxima || 1; // Evitar divisão por zero
+            const porcentagem = (pontuacaoObtida / pontuacaoMaxima) * 100;
+
             items.push({
-              CodInd: results.rows.item(i).CodInd || 0,  // Adiciona valor padrão
-              CodAvalPeso: results.rows.item(i).CodAvalPeso !== null ? results.rows.item(i).CodAvalPeso : 0,
-              PontuacaoMaxima: results.rows.item(i).PontuacaoMaxima || 0,
+              CodInd: item.CodInd,
+              Porcentagem: porcentagem,
             });
           }
           resolve(items);
         },
         (tx, error) => {
-          console.error('Erro ao buscar pontuações e pontuação máxima:', error);
+          console.error('Erro ao buscar pontuações percentuais:', error);
           reject(error);
         }
       );
     });
   });
 };
-
 
 
 // Dashboard Histórico

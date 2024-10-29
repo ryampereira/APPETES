@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { View, Text, Alert, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { buscaTodos, exclui } from '../services/dbservice';
 
@@ -164,7 +165,7 @@ const ListagemAvaliacaoIQE = ({ navigation }) => {
                   console.log("Navegando para Dashboard com codAval: ", item.CodAval);
                   navigation.navigate('Dashboard', { codAval: item.CodAval });
                 }}>
-                  <Text style={styles.dashboardButtonText}>👁️</Text>
+                  <Icon name="bar-chart" size={25} color="#fff" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -232,12 +233,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    right: 25, 
-    top: -65, 
-  },
-  dashboardButtonText: {
-    color: '#fff',
-    fontSize: 25, 
+    right: 25,
+    top: -65,
   },
   updateButton: {
     backgroundColor: '#FFA500',
@@ -246,18 +243,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#008000',
   },
   deleteButton: {
-    backgroundColor: '#f44336',
+    backgroundColor: '#FF0000',
   },
   buttonText: {
     color: '#fff',
-  },
-  mainButton: {
-    backgroundColor: '#381704',
-    height: 40,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
+    fontWeight: 'bold',
   },
   emptyView: {
     flex: 1,
@@ -266,7 +256,14 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#888',
+    color: '#999',
+  },
+  mainButton: {
+    backgroundColor: '#381704',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
   },
 });
 

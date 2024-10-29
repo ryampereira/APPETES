@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { View, Text, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { buscaTodos, exclui } from '../services/dbservice';
 
@@ -82,7 +83,7 @@ const ListagemETEs = ({ navigation }) => {
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.dashboardButton} onPress={() => handleDashboardHistorico(item.CodETE)}>
-                  <Text style={styles.buttonText}>Dashboard</Text>
+                  <Icon name="bar-chart" size={25} color="#fff" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -128,10 +129,10 @@ const styles = StyleSheet.create({
   },
   editButton: {
     backgroundColor: '#4CAF50',
-    height: 50,
+    height: 40,
     borderColor: '#fff',
     borderWidth: 2,
-    width: 80,
+    width: 70,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -139,10 +140,10 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#f44336',
-    height: 50,
+    height: 40,
     borderColor: '#fff',
     borderWidth: 2,
-    width: 80,
+    width: 70,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -150,10 +151,10 @@ const styles = StyleSheet.create({
   },
   dashboardButton: {
     backgroundColor: '#FFA500', // Cor amarela
-    height: 50,
+    height: 40,
     borderColor: '#fff',
     borderWidth: 2,
-    width: 80,
+    width: 70,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
