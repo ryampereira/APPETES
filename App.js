@@ -18,6 +18,7 @@ import ListagemAvaliacaoIQE from './src/avaliacaoiqe/Listagemavaliacaoiqe';
 import Questionario from './src/questionario/questionario';
 import Dashboard from './src/dashboard';
 import DashboardHistorico from './src/dashboardHistorico';
+import Ferramentas from './src/ferramentas/ferramentas';
 
 
 const Stack = createNativeStackNavigator();
@@ -100,6 +101,11 @@ export default function App() {
           <Stack.Screen
             name="DashboardHistorico"
             component={DashboardHistorico}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Ferramentas"
+            component={Ferramentas}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

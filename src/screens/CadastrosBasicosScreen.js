@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'; // Importação das fontes
+import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'; 
+import { Ionicons } from '@expo/vector-icons'; // Importa o Ionicons
 
 const CadastrosBasicosScreen = ({ navigation }) => {
   let [fontsLoaded] = useFonts({
@@ -9,14 +10,14 @@ const CadastrosBasicosScreen = ({ navigation }) => {
   });
 
   if (!fontsLoaded) {
-    return null; // Adicione um indicador de carregamento, se preferir
+    return null; 
   }
 
   return (
     <View style={styles.container}>
-      {/* Botão voltar no canto superior esquerdo */}
+      {/* Botão de seta para voltar */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('HomeScreen')}>
-        <Text style={styles.backButtonText}>Voltar</Text>
+        <Ionicons name="arrow-back" size={24} color="#381704" />
       </TouchableOpacity>
 
       <Text style={styles.title}>Cadastros Básicos</Text>
@@ -35,10 +36,9 @@ const CadastrosBasicosScreen = ({ navigation }) => {
         <Text style={styles.buttonText}>Bacia Hidrográfica</Text>
       </TouchableOpacity>
 
-      {/* Novo botão para listar avaliadores */}
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => navigation.navigate('ListagemAvaliadores')} // Rota para a listagem de avaliadores
+        onPress={() => navigation.navigate('ListagemAvaliadores')} 
       >
         <Text style={styles.buttonText}>Avaliadores</Text>
       </TouchableOpacity>
@@ -53,26 +53,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5', 
   },
   backButton: {
-    position: 'absolute',
-    top: 50, 
-    left: 16,
-    backgroundColor: '#381704', 
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    elevation: 4,
-  },
-  backButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
+    position: 'absolute', // Posiciona o botão no canto superior esquerdo
+    top: 40, // Distância do topo
+    left: 20, // Distância da esquerda
   },
   title: {
     fontSize: 26,
     fontWeight: '700',
-    marginBottom: 30, // Margem inferior ajustada para descer o texto
-    marginTop: 100, // Margem superior ajustada para descer o texto
-    color: '#381704', // Cor amarronzada
+    marginBottom: 30, 
+    marginTop: 100, 
+    color: '#381704', 
     textAlign: 'center',
     fontFamily: 'Roboto_700Bold',
     shadowColor: '#000',
@@ -82,11 +72,11 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   button: {
-    backgroundColor: '#381704', // Cor amarronzada
+    backgroundColor: '#381704', 
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginVertical: 15, // Margem vertical ajustada para descer os botões
+    marginVertical: 15, 
     alignItems: 'center',
     elevation: 4,
   },
@@ -100,6 +90,7 @@ const styles = StyleSheet.create({
 });
 
 export default CadastrosBasicosScreen;
+
 
 
 

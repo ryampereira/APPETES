@@ -98,6 +98,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#888',
   },
+  radioGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  
+  radioText: {
+    fontSize: 16,
+    padding: 10,
+  },
+  
+  selectedRadio: {
+    fontWeight: 'bold',
+    color: 'blue', // Ou outra cor para indicar seleção
+  },
 });
 
 export default styles;

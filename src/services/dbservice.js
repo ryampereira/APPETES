@@ -1,4 +1,8 @@
 import { openDatabase } from '../database/database'; // Ajuste o caminho conforme necessário
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
+
 
 let dbPromise;
 
@@ -318,4 +322,53 @@ export const fetchEteNameByCodETE = async (codETE) => {
       );
     });
   });
+};
+
+
+
+const databaseName = 'bd.iqe.db';
+const databasePath = `${FileSystem.documentDirectory}SQLite/${databaseName}`;
+
+// Função para exportar o banco de dados
+export const exportDatabase = async () => {
+    try {
+        const fileUri = `${FileSystem.documentDirectory}${databaseName}`;
+
+        // Verifica se o arquivo do banco de dados existe
+        const dbExists = await FileSystem.getInfoAsync(databasePath);
+        if (!dbExists.exists) {
+            throw new Error('Banco de dados não encontrado.');
+        }
+
+        // Copia o banco de dados para um caminho acessível
+        await FileSystem.copyAsync({
+            from: databasePath,
+            to: fileUri,
+        });
+
+        return fileUri; // Retorna o URI do arquivo exportado
+    } catch (error) {
+        throw new Error('Erro ao exportar o banco de dados: ' + error.message);
+    }
+};
+
+// Função para importar o banco de dados
+export const importDatabase = async (importUri) => {
+    try {
+        // Verifica se o arquivo de importação existe
+        const fileExists = await FileSystem.getInfoAsync(importUri);
+        if (!fileExists.exists) {
+            throw new Error('Arquivo de importação não encontrado.');
+        }
+
+        // Copia o arquivo importado para o local do banco de dados
+        await FileSystem.copyAsync({
+            from: importUri,
+            to: databasePath,
+        });
+
+        return true;
+    } catch (error) {
+        throw new Error('Erro ao importar o banco de dados: ' + error.message);
+    }
 };

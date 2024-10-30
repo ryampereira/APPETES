@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from 'victory-native';
 import { fetchScores, fetchEteNameByCodAval, fetchDataVistoriabyCodAval } from '../services/dbservice';
 
-
 const Dashboard = ({ navigation, route }) => {
     const { codAval } = route.params;
     const [scores, setScores] = useState([]);
@@ -12,7 +11,6 @@ const Dashboard = ({ navigation, route }) => {
     const [eteName, setEteName] = useState('');
     const [dataVistoria, setDataVistoria] = useState('');
 
-    // Perguntas para a legenda
     const perguntas = [
         "Proximidade de Núcleos Habitacionais",
         "Zoneamento Municipal",
@@ -84,9 +82,10 @@ const Dashboard = ({ navigation, route }) => {
             <VictoryChart theme={VictoryTheme.material} domainPadding={20}>
                 <VictoryAxis
                     label="Perguntas"
+                    tickValues={Array.from({ length: perguntas.length }, (_, i) => i + 1)}
                     style={{
                         axisLabel: { padding: 30 },
-                        tickLabels: { angle: -45, fontSize: 10, padding: 5 },
+                        tickLabels: { angle: -45, fontSize: 8, padding: 3 }, // Fonte menor e menor espaçamento
                     }}
                 />
                 <VictoryAxis
@@ -104,7 +103,6 @@ const Dashboard = ({ navigation, route }) => {
                 />
             </VictoryChart>
 
-            {/* ScrollView para a lista de perguntas */}
             <ScrollView style={[styles.scrollView, { marginBottom: 80 }]}>
                 {perguntas.map((pergunta, index) => (
                     <Text key={index} style={styles.questionText}>
@@ -159,22 +157,14 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         width: '100%',
-        marginTop: 10, // Espaço acima da ScrollView
+        marginTop: 10,
     },
     questionText: {
-        color: '#8B4513', // Cor amarronzada
-        fontSize: 14, // Tamanho da fonte
-        marginVertical: 5, // Espaço vertical entre as perguntas
-        textAlign: 'left', // Alinhamento à esquerda
+        color: '#8B4513',
+        fontSize: 14,
+        marginVertical: 5,
+        textAlign: 'left',
     },
 });
 
 export default Dashboard;
-
-
-
-
-
-
-
-

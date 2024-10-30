@@ -37,6 +37,13 @@ const HomeScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Cadastrar IQE</Text> 
       </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.navigate('Ferramentas')} 
+      >
+        <Text style={styles.buttonText}>Ferramentas</Text> 
+      </TouchableOpacity>
+      
     </View>
   );
 };

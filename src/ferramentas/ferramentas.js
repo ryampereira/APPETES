@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import ExportModal from './exportar'; 
+import ImportModal from './importar';
+import { Ionicons } from '@expo/vector-icons'; // Importa o Ionicons
 
 const Ferramentas = ({ navigation }) => {
     let [fontsLoaded] = useFonts({
@@ -9,7 +11,8 @@ const Ferramentas = ({ navigation }) => {
         Roboto_700Bold,
     });
 
-    const [modalVisible, setModalVisible] = useState(false);
+    const [exportModalVisible, setExportModalVisible] = useState(false);
+    const [importModalVisible, setImportModalVisible] = useState(false);
 
     if (!fontsLoaded) {
         return null; 
@@ -17,26 +20,40 @@ const Ferramentas = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            {/* Seta para voltar para a HomeScreen */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()} // Navega de volta
+            >
+                <Ionicons name="arrow-back" size={24} color="#381704" />
+            </TouchableOpacity>
+
             <Text style={styles.title}>Ferramentas</Text>
 
             <TouchableOpacity 
                 style={styles.button}
-                onPress={() => navigation.navigate('ImportModal')}
+                onPress={() => setImportModalVisible(true)} // Abre o modal de importação
             >
                 <Text style={styles.buttonText}>Importar banco de dados</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
                 style={styles.button}
-                onPress={() => setModalVisible(true)} // Abre o modal de exportação
+                onPress={() => setExportModalVisible(true)} // Abre o modal de exportação
             >
                 <Text style={styles.buttonText}>Exportar banco de dados</Text> 
             </TouchableOpacity>
 
-            {/* Aqui o modal é controlado diretamente */}
+            {/* Modal de Importação */}
+            <ImportModal 
+                modalVisible={importModalVisible} 
+                setModalVisible={setImportModalVisible} 
+            />
+
+            {/* Modal de Exportação */}
             <ExportModal 
-                modalVisible={modalVisible} 
-                setModalVisible={setModalVisible} 
+                modalVisible={exportModalVisible} 
+                setModalVisible={setExportModalVisible} 
                 exportType="Dados"
             />
         </View>
@@ -73,7 +90,11 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontFamily: 'Roboto_400Regular',
     },
+    backButton: {
+        position: 'absolute', // Posiciona o botão no canto superior esquerdo
+        top: 40, // Distância do topo
+        left: 20, // Distância da esquerda
+    },
 });
 
 export default Ferramentas;
-
