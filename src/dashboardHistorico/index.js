@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory-native';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { fetchHistory, fetchEteNameByCodETE } from '../services/dbservice';
 
 const DashboardHistorico = ({ route, navigation }) => {
@@ -8,6 +10,7 @@ const DashboardHistorico = ({ route, navigation }) => {
     const [historicalData, setHistoricalData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [nomeETE, setNomeETE] = useState('');
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
         const loadHistoricalScores = async () => {
@@ -18,16 +21,16 @@ const DashboardHistorico = ({ route, navigation }) => {
             } catch (error) {
                 console.error('Erro ao carregar histórico de pontuações:', error);
             } finally {
-                setLoading(false); // Mover para o bloco finally
+                setLoading(false);
             }
         };
 
         const loadEteName = async () => {
             try {
-                console.log('Buscando nome da ETE com CodETE:', codETE); // Adicione esta linha
+                console.log('Buscando nome da ETE com CodETE:', codETE);
                 const name = await fetchEteNameByCodETE(codETE);
                 setNomeETE(name || 'Nome da ETE não encontrado');
-                console.log("Nome da ETE:", name); // Adicione esta linha
+                console.log("Nome da ETE:", name);
             } catch (error) {
                 console.error('Erro ao carregar nome da ETE:', error);
             }
@@ -36,6 +39,51 @@ const DashboardHistorico = ({ route, navigation }) => {
         loadHistoricalScores();
         loadEteName();
     }, [codETE]);
+
+    const handleExportPDF = async () => {
+        setExporting(true);
+        try {
+            const htmlContent = `
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h1 { text-align: center; color: #381704; }
+                        h2 { color: #8B4513; margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+                        th { background-color: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Histórico de Avaliações</h1>
+                    <h2>ETE: ${nomeETE}</h2>
+                    <table>
+                        <tr>
+                            <th>Data da Vistoria</th>
+                            <th>Total de Pontos</th>
+                        </tr>
+                        ${historicalData.map(item => `
+                            <tr>
+                                <td>${item.dataVistoria}</td>
+                                <td>${item.totalPoints}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const { uri } = await Print.printToFileAsync({ html: htmlContent });
+
+            await Sharing.shareAsync(uri);
+        } catch (error) {
+            Alert.alert("Erro", "Erro ao exportar PDF.");
+            console.error("Erro ao exportar PDF:", error);
+        } finally {
+            setExporting(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -74,6 +122,19 @@ const DashboardHistorico = ({ route, navigation }) => {
                     />
                 </VictoryChart>
             </View>
+
+            <TouchableOpacity
+                style={[styles.exportButton, exporting && { backgroundColor: 'gray' }]}
+                onPress={handleExportPDF}
+                disabled={exporting}
+            >
+                {exporting ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                    <Text style={styles.buttonText}>Gerar PDF</Text>
+                )}
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Voltar</Text>
             </TouchableOpacity>
@@ -88,6 +149,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 16,
         backgroundColor: '#f5f5f5',
+        flexDirection: 'column',  
     },
     chartContainer: {
         flex: 1,
@@ -115,23 +177,33 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    exportButton: {
+        backgroundColor: '#381704',
+        padding: 6,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginVertical: 10,
+        width: '100%',
+    },
     backButton: {
         backgroundColor: '#381704',
         borderRadius: 5,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        marginTop: 20,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        marginTop: 5,
         width: '100%',
-        position: 'absolute',
-        bottom: 20,
         alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        textAlign: 'center',
     },
     backButtonText: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 16,
         textAlign: 'center',
     },
 });
 
 export default DashboardHistorico;
-
