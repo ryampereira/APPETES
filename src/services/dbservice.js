@@ -372,3 +372,34 @@ export const importDatabase = async (importUri) => {
         throw new Error('Erro ao importar o banco de dados: ' + error.message);
     }
 };
+
+const tables = ['municipio', 'indicador', 'resultadoavaliacao', 'ete', 'baciahidro', 'avaliadorinea', 'avaliacaopeso', 'avaliacaoiqeitem', 'avaliacaoiqe'];
+
+export const fetchTablesData = async () => {
+  const db = await initializeDb();
+  const allData = {};
+
+  return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+          const tableFetchPromises = tables.map(table =>
+              new Promise((res, rej) => {
+                  tx.executeSql(
+                      `SELECT * FROM ${table}`,
+                      [],
+                      (_, { rows }) => res({ table, data: rows._array }),
+                      (_, error) => rej(error)
+                  );
+              })
+          );
+
+          Promise.all(tableFetchPromises)
+              .then(results => {
+                  results.forEach(({ table, data }) => {
+                      allData[table] = data;
+                  });
+                  resolve(allData);
+              })
+              .catch(error => reject(error));
+      });
+  });
+};
