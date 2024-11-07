@@ -46,7 +46,7 @@ const ExportarXLSX = ({ modalVisible, setModalVisible }) => {
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Exportar como XLSX</Text>
+                    <Text style={styles.modalTitle}>Exportar como XLSX separado</Text>
                     <TouchableOpacity
                         style={styles.exportButton}
                         onPress={exportToExcel}
@@ -70,42 +70,43 @@ const ExportarXLSX = ({ modalVisible, setModalVisible }) => {
 
 const styles = StyleSheet.create({
     modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width: 300,
-        padding: 20,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        alignItems: 'center',
+      width: '80%', // Largura do card
+      padding: 20,
+      backgroundColor: 'white',
+      borderRadius: 10,
+      elevation: 5, // Sombra para o card
+      alignItems: 'center',
     },
     modalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 20,
+      fontSize: 18,
+      marginBottom: 15,
+      textAlign: 'center',
     },
     exportButton: {
-        backgroundColor: '#381704',
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
-        marginVertical: 10,
+      backgroundColor: '#D3D3D3', // Cor do botão
+      padding: 10,
+      borderRadius: 5,
+      marginVertical: 5,
+      width: '100%',
+      alignItems: 'center',
     },
     exportButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
+      color: '#000000', // Cor do texto do botão
     },
     closeButton: {
-        marginTop: 10,
+      marginTop: 10,
     },
     closeButtonText: {
-        color: '#381704',
-        fontSize: 16,
+      color: '#381704', // Cor do texto do botão de fechar
+      fontSize: 16,
     },
-});
+  });
+  
 
 export default ExportarXLSX;

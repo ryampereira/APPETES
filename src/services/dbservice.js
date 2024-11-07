@@ -1,6 +1,7 @@
 import { openDatabase } from '../database/database'; // Ajuste o caminho conforme necessário
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import XLSX from 'xlsx';
 
 
 
@@ -402,4 +403,74 @@ export const fetchTablesData = async () => {
               .catch(error => reject(error));
       });
   });
+};
+
+
+export const exportToXLSXUnified = async () => {
+  try {
+    // Inicializa o banco de dados
+    const db = await initializeDb();
+
+    // Query SQL
+    const query = `
+      SELECT E.NomeETE, M.NomeMun, A.DataVistoria, A.AnoBase, AI.NomeAvaliador, I.DescrInd, RA.DescrResAval, AP.Pontuacao
+      FROM avaliacaoiqe A
+      LEFT JOIN ete E ON A.CodETE = E.CodETE
+      LEFT JOIN avaliadorinea AI ON AI.CodAvaliador = A.CodAval
+      LEFT JOIN avaliacaoiqeitem AII ON A.CodAval = AII.CodAval
+      LEFT JOIN avaliacaopeso AP ON AII.CodAvalPeso = AP.CodAvalPeso
+      LEFT JOIN resultadoavaliacao RA ON RA.CodResAval = AP.CodResAval
+      LEFT JOIN municipio M ON M.CodMun = E.CodMun
+      LEFT JOIN indicador I ON I.CodInd = AII.CodInd
+      ORDER BY 1, 3, 6
+    `;
+
+    // Log para verificar a consulta SQL
+    console.log("Consulta SQL:", query);
+
+    // Executar a consulta SQL dentro de uma transação
+    const data = await new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(query, [], (tx, results) => {
+          const rows = results.rows._array; // Acesse diretamente a propriedade _array
+          
+          // Log para verificar os dados retornados
+          console.log("Resultados da consulta SQL:", rows);
+
+          if (rows.length > 0) {
+            resolve(rows);  // Retornar os dados se houver registros
+          } else {
+            reject(new Error("Nenhum dado encontrado na consulta SQL."));
+          }
+        }, (tx, error) => {
+          reject(error);  // Caso ocorra algum erro na execução
+        });
+      });
+    });
+
+    // Verificar se há dados
+    if (data.length > 0) {
+      // Converter os dados para planilha XLSX
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "DadosExportados");
+
+      // Gerar o arquivo XLSX
+      const wbout = XLSX.write(workbook, { type: 'base64', bookType: "xlsx" });
+
+      // Definir o caminho para salvar o arquivo
+      const fileUri = `${FileSystem.documentDirectory}dados_unificados.xlsx`;
+
+      // Salvar o arquivo no dispositivo
+      await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
+
+      console.log('Arquivo XLSX exportado com sucesso:', fileUri);
+      return fileUri;
+    } else {
+      throw new Error('Nenhum dado encontrado na consulta SQL.');
+    }
+  } catch (error) {
+    console.error('Erro ao exportar para XLSX:', error);
+    throw error;
+  }
 };

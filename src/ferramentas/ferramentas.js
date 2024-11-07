@@ -1,10 +1,10 @@
-// Ferramentas.js
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import ExportModal from './exportar';
 import ImportModal from './importar';
 import ExportarXLSX from './ExportarXLSX';
+import ExportarXLSXUnificadoModal from './ExportarXLSXu';  // Importa o novo modal de exportação unificada
 import { Ionicons } from '@expo/vector-icons';
 
 const Ferramentas = ({ navigation }) => {
@@ -16,6 +16,7 @@ const Ferramentas = ({ navigation }) => {
     const [exportModalVisible, setExportModalVisible] = useState(false);
     const [importModalVisible, setImportModalVisible] = useState(false);
     const [exportXLSXVisible, setExportXLSXVisible] = useState(false);
+    const [exportXLSXUnificadoVisible, setExportXLSXUnificadoVisible] = useState(false);  // Novo estado para o modal de exportação unificada
 
     if (!fontsLoaded) {
         return null;
@@ -53,6 +54,13 @@ const Ferramentas = ({ navigation }) => {
                 <Text style={styles.buttonText}>Exportar como XLSX</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity 
+                style={styles.button}
+                onPress={() => setExportXLSXUnificadoVisible(true)}  // Novo botão para abrir o modal de exportação unificada
+            >
+                <Text style={styles.buttonText}>Exportar como XLSX Unificado</Text>
+            </TouchableOpacity>
+
             <ImportModal 
                 modalVisible={importModalVisible} 
                 setModalVisible={setImportModalVisible} 
@@ -67,6 +75,11 @@ const Ferramentas = ({ navigation }) => {
             <ExportarXLSX 
                 modalVisible={exportXLSXVisible} 
                 setModalVisible={setExportXLSXVisible} 
+            />
+
+            <ExportarXLSXUnificadoModal   // Novo modal de exportação unificada
+                modalVisible={exportXLSXUnificadoVisible} 
+                setModalVisible={setExportXLSXUnificadoVisible} 
             />
         </View>
     );
@@ -103,9 +116,9 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_400Regular',
     },
     backButton: {
-        position: 'absolute', // Posiciona o botão no canto superior esquerdo
-        top: 40, // Distância do topo
-        left: 20, // Distância da esquerda
+        position: 'absolute',
+        top: 40,
+        left: 20,
     },
 });
 
