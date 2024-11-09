@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from 'victory-native';
 import { fetchScores, fetchEteNameByCodAval, fetchDataVistoriabyCodAval } from '../services/dbservice';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import { captureRef } from 'react-native-view-shot';
+import * as FileSystem from 'expo-file-system';
 
 const Dashboard = ({ navigation, route }) => {
     const { codAval } = route.params;
@@ -12,8 +14,9 @@ const Dashboard = ({ navigation, route }) => {
     const [eteName, setEteName] = useState('');
     const [dataVistoria, setDataVistoria] = useState('');
     const [exporting, setExporting] = useState(false);
+    const chartRef = useRef();
 
-    const perguntas = [
+    const perguntas = [ 
         "Proximidade de Núcleos Habitacionais",
         "Zoneamento Municipal",
         "Status operacional das unidades que compõem o sistema",
@@ -42,7 +45,7 @@ const Dashboard = ({ navigation, route }) => {
         "Faz reuso do efluente tratado",
         "Credenciamento do laboratório que realiza as análises do efluente",
         "Elaborou inventário de emissões de gases de efeito estufa no exercício do ano anterior"
-    ];
+     ];
 
     useEffect(() => {
         const getScoresAndEteName = async () => {
@@ -72,6 +75,16 @@ const Dashboard = ({ navigation, route }) => {
     const handleExportPDF = async () => {
         setExporting(true);
         try {
+            // Captura o gráfico como imagem em base64
+            const chartImageURI = await captureRef(chartRef, {
+                format: 'png',
+                quality: 0.8,
+                result: 'base64',
+            });
+
+            // Converte para formato de imagem embutida no HTML
+            const chartImageBase64 = `data:image/png;base64,${chartImageURI}`;
+
             const html = `
                 <html>
                     <head>
@@ -81,11 +94,14 @@ const Dashboard = ({ navigation, route }) => {
                             p, ul { font-size: 12px; color: #555; }
                             ul { padding: 0; list-style: none; }
                             li { margin-bottom: 5px; }
+                            img { width: 100%; max-width: 500px; height: auto; display: block; margin: 20px auto; }
                         </style>
                     </head>
                     <body>
                         <h1>Dashboard da ${eteName}</h1>
                         <p>Data da Vistoria: ${dataVistoria}</p>
+                        <h2>Grafico de Pontuação</h2>
+                        <img src="${chartImageBase64}" alt="Gráfico de pontuação"/>
                         <h2>Legenda das Perguntas:</h2>
                         <ul>
                             ${perguntas.map((pergunta, index) => `<li>${index + 1}: ${pergunta}</li>`).join('')}
@@ -121,29 +137,33 @@ const Dashboard = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Dashboard da {eteName} em {dataVistoria}</Text>
-            <VictoryChart theme={VictoryTheme.material} domainPadding={20}>
-                <VictoryAxis
-                    label="Perguntas"
-                    tickValues={Array.from({ length: perguntas.length }, (_, i) => i + 1)}
-                    style={{
-                        axisLabel: { padding: 30 },
-                        tickLabels: { angle: -45, fontSize: 8, padding: 3 },
-                    }}
-                />
-                <VictoryAxis
-                    dependentAxis
-                    label="Porcentagem (%)"
-                    style={{
-                        axisLabel: { padding: 35 },
-                    }}
-                />
-                <VictoryBar
-                    data={scores}
-                    x="x"
-                    y="y"
-                    style={{ data: { fill: '#4CAF50' } }}
-                />
-            </VictoryChart>
+            
+            {/* Referência ao gráfico */}
+            <View ref={chartRef} collapsable={false}>
+                <VictoryChart theme={VictoryTheme.material} domainPadding={20}>
+                    <VictoryAxis
+                        label="Perguntas"
+                        tickValues={Array.from({ length: perguntas.length }, (_, i) => i + 1)}
+                        style={{
+                            axisLabel: { padding: 30 },
+                            tickLabels: { angle: -45, fontSize: 8, padding: 3 },
+                        }}
+                    />
+                    <VictoryAxis
+                        dependentAxis
+                        label="Porcentagem (%)"
+                        style={{
+                            axisLabel: { padding: 35 },
+                        }}
+                    />
+                    <VictoryBar
+                        data={scores}
+                        x="x"
+                        y="y"
+                        style={{ data: { fill: '#4CAF50' } }}
+                    />
+                </VictoryChart>
+            </View>
 
             <ScrollView style={styles.scrollView}>
                 {perguntas.map((pergunta, index) => (
@@ -214,9 +234,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-        color: '#fff', // Cor do texto
-        fontWeight: 'bold', // Texto em negrito
-        fontSize: 16, // Tamanho da fonte
+        color: '#fff', 
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });
 
