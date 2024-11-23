@@ -14,7 +14,10 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>App IQE</Text>
+      <Image 
+        source={require('./assets/logo.png')} 
+        style={styles.logo} 
+      />
 
       <TouchableOpacity 
         style={styles.button}
@@ -85,6 +88,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Roboto_400Regular',
     letterSpacing: 1.1,
+  },
+  logo: {
+    width: 200, 
+    height: 200, 
+    resizeMode: 'contain', 
   },
 });
 
