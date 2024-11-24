@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'; // Importação das fontes
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'; 
+
 
 const HomeScreen = ({ navigation }) => {
   let [fontsLoaded] = useFonts({
@@ -15,7 +16,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image 
-        source={require('./assets/logo.png')} 
+        source={require('../../assets/logo.png')} 
         style={styles.logo} 
       />
 
@@ -90,9 +91,9 @@ const styles = StyleSheet.create({
     letterSpacing: 1.1,
   },
   logo: {
-    width: 200, 
-    height: 200, 
-    resizeMode: 'contain', 
+    width: 470,
+    height: 100,  
+    marginBottom: 20,
   },
 });
 
