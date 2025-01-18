@@ -416,13 +416,14 @@ export const exportToXLSXUnified = async () => {
       SELECT E.NomeETE, M.NomeMun, A.DataVistoria, A.AnoBase, AI.NomeAvaliador, I.DescrInd, RA.DescrResAval, AP.Pontuacao
       FROM avaliacaoiqe A
       LEFT JOIN ete E ON A.CodETE = E.CodETE
-      LEFT JOIN avaliadorinea AI ON AI.CodAvaliador = A.CodAval
+      LEFT JOIN avaliadorinea AI ON AI.CodAvaliador = A.CodAvaliadorINEA  
       LEFT JOIN avaliacaoiqeitem AII ON A.CodAval = AII.CodAval
       LEFT JOIN avaliacaopeso AP ON AII.CodAvalPeso = AP.CodAvalPeso
       LEFT JOIN resultadoavaliacao RA ON RA.CodResAval = AP.CodResAval
       LEFT JOIN municipio M ON M.CodMun = E.CodMun
       LEFT JOIN indicador I ON I.CodInd = AII.CodInd
       ORDER BY 1, 3, 6
+
     `;
 
     // Log para verificar a consulta SQL

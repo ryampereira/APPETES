@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { RadioButton } from 'react-native-paper'; 
 import styles from './styles';
 import { inclui, atualiza, exclui, buscaTodos } from '../services/dbservice';
 
@@ -104,14 +105,23 @@ const CadastroETE = ({ navigation, route }) => {
   }
 
   function validateFields() {
+    const isUpdateMode = selectedETE;
+  
     for (let key in ete) {
       if (['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno', 'RecebePercolado', 'RecebeLodoFossaBan'].includes(key)) {
-        if (isNaN(ete[key]) || ete[key] === '') {
+        let value = ete[key];
+  
+        if (isUpdateMode && (value === '' || value === null || value === undefined)) {
+          ete[key] = 0;  
+          value = 0;
+        }
+  
+        if (isNaN(value)) {
           console.log(`Campo numérico inválido: ${key} - Valor: ${ete[key]}`);
           return false;
         }
       } else {
-        if (ete[key] === null || ete[key] === undefined || (typeof ete[key] === 'string' && ete[key].trim() === '')) {
+        if (!isUpdateMode && (ete[key] === null || ete[key] === undefined || (typeof ete[key] === 'string' && ete[key].trim() === ''))) {
           console.log(`Campo inválido: ${key} - Valor: ${ete[key]}`);
           return false;
         }
@@ -119,19 +129,32 @@ const CadastroETE = ({ navigation, route }) => {
     }
     return true;
   }
+  
+  
+  
 
   async function handleSaveETE() {
     if (validateFields()) {
       try {
         const formattedEte = { ...ete };
-        // Convertendo campos numéricos para tipo numérico
+          ['RecebePercolado', 'RecebeLodoFossaBan'].forEach(field => {
+          if (ete[field] === undefined || ete[field] === '') {
+            formattedEte[field] = 0;
+          } else {
+            const numericValue = parseInt(ete[field], 10);
+            if (numericValue === 0 || numericValue === 1) {
+              formattedEte[field] = numericValue;  
+            } else {
+              formattedEte[field] = 0;
+              console.log(`Campo numérico inválido: ${field} - Valor: ${ete[field]}`);
+            }
+          }
+        });
+  
         ['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].forEach(field => {
-          formattedEte[field] = parseFloat(ete[field]) || 0;  // Usar parseFloat para campos numéricos
+          formattedEte[field] = parseFloat(ete[field]) || 0;  
         });
-        ['RecebePercolado', 'RecebeLodoFossaBan'].forEach(field => {
-          formattedEte[field] = parseInt(ete[field], 10) || 0;  // Usar parseInt para campos inteiros
-        });
-
+  
         if (selectedETE) {
           console.log('Atualizando ETE:', formattedEte);
           await atualiza('ete', selectedETE.CodETE, formattedEte);
@@ -139,6 +162,7 @@ const CadastroETE = ({ navigation, route }) => {
           console.log('Inserindo ETE:', formattedEte);
           await inclui('ete', formattedEte);
         }
+  
         resetForm();
         navigation.navigate('HomeScreen');
       } catch (error) {
@@ -149,6 +173,9 @@ const CadastroETE = ({ navigation, route }) => {
       Alert.alert('Atenção', 'Todos os campos são obrigatórios');
     }
   }
+  
+  
+
 
   function resetForm() {
     setEte({
@@ -208,19 +235,35 @@ const CadastroETE = ({ navigation, route }) => {
       <Text style={styles.header}>{selectedETE ? 'Atualizar ETE' : 'Cadastrar'}</Text>
 
       {Object.keys(ete)
-        .filter(key => !['CodBaciaHidro', 'CodMun'].includes(key))
-        .map((key) => (
-          <View key={key} style={styles.inputGroup}>
-            <Text style={styles.label}>{formatFieldLabel(key)}:</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder={`Digite ${formatFieldLabel(key)}`}
-              value={ete[key]}
-              keyboardType={['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].includes(key) ? 'numeric' : 'default'}
-              onChangeText={value => setEte({ ...ete, [key]: value })}
-            />
+  .filter(key => !['CodBaciaHidro', 'CodMun'].includes(key))
+  .map((key) => (
+    <View key={key} style={styles.inputGroup}>
+      <Text style={styles.label}>{formatFieldLabel(key)}:</Text>
+
+      {key === 'RecebePercolado' || key === 'RecebeLodoFossaBan' ? (
+        <RadioButton.Group
+          onValueChange={value => setEte({ ...ete, [key]: value })}
+          value={ete[key] !== undefined ? (ete[key] === '1' ? '1' : '0') : '0'} 
+        >
+          <View style={styles.radioButtonGroup}>
+            <Text>Sim</Text>
+            <RadioButton value="1" />
+            <Text>Não</Text>
+            <RadioButton value="0" />
           </View>
-      ))}
+        </RadioButton.Group>
+      ) : (
+        <TextInput
+          style={styles.textInput}
+          placeholder={`Digite ${formatFieldLabel(key)}`}
+          value={ete[key]}
+          keyboardType={['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].includes(key) ? 'numeric' : 'default'}
+          onChangeText={value => setEte({ ...ete, [key]: value })}
+        />
+      )}
+    </View>
+))}
+
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Bacia Hidrográfica:</Text>
