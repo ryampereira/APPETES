@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { VictoryBar, VictoryChart, VictoryAxis } from 'victory-native';
+import { VictoryBar, VictoryChart, VictoryAxis, VictoryLabel } from 'victory-native';  // Use apenas do 'victory-native'
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -109,10 +109,12 @@ const DashboardHistorico = ({ route, navigation }) => {
                             tickLabels: { fontSize: 10, angle: 45, textAnchor: 'start' }
                         }}
                     />
+                    
                     <VictoryAxis
                         dependentAxis
                         tickFormat={(x) => `${x}`}
                     />
+    
                     <VictoryBar
                         data={historicalData}
                         x="dataVistoria"
@@ -120,9 +122,33 @@ const DashboardHistorico = ({ route, navigation }) => {
                         barWidth={20}
                         style={{ data: { fill: "#4caf50" } }}
                     />
+    
+                    <VictoryLabel
+                        x={320}  
+                        y={250}  
+                        text="Data"  
+                        style={{
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            fill: '#381704', 
+                            textAnchor: 'middle'
+                        }}
+                    />
+    
+                    <VictoryLabel
+                        x={50} 
+                        y={10}  
+                        text="Pontos"  
+                        style={{
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            fill: '#381704', 
+                            textAnchor: 'middle'
+                        }}
+                    />
                 </VictoryChart>
             </View>
-
+    
             <TouchableOpacity
                 style={[styles.exportButton, exporting && { backgroundColor: 'gray' }]}
                 onPress={handleExportPDF}
@@ -134,12 +160,16 @@ const DashboardHistorico = ({ route, navigation }) => {
                     <Text style={styles.buttonText}>Gerar PDF</Text>
                 )}
             </TouchableOpacity>
-
+    
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Voltar</Text>
             </TouchableOpacity>
         </View>
     );
+    
+    
+    
+    
 };
 
 const styles = StyleSheet.create({

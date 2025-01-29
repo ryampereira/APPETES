@@ -13,8 +13,8 @@ const CadastroETE = ({ navigation, route }) => {
     VazaoMediaDiaProj: '',
     NivelTratamento: '',
     PopulacaoRealAtend: '',
-    PopulacaoRealAno: '',
-    PopulacaoRealProj: '',
+    //PopulacaoRealAno: '',
+    //PopulacaoRealProj: '',
     PopulacaoProjAno: '',
     RegimeOper: '',
     Ocupacao: '',
@@ -51,8 +51,8 @@ const CadastroETE = ({ navigation, route }) => {
               VazaoMediaDiaProj: (ete.VazaoMediaDiaProj || '').toString(),
               NivelTratamento: ete.NivelTratamento || '',
               PopulacaoRealAtend: (ete.PopulacaoRealAtend || '').toString(),
-              PopulacaoRealAno: (ete.PopulacaoRealAno || '').toString(),
-              PopulacaoRealProj: (ete.PopulacaoRealProj || '').toString(),
+              //PopulacaoRealAno: (ete.PopulacaoRealAno || '').toString(),
+              //PopulacaoRealProj: (ete.PopulacaoRealProj || '').toString(),
               PopulacaoProjAno: (ete.PopulacaoProjAno || '').toString(),
               RegimeOper: ete.RegimeOper || '',
               Ocupacao: ete.Ocupacao || '',
@@ -108,7 +108,9 @@ const CadastroETE = ({ navigation, route }) => {
     const isUpdateMode = selectedETE;
   
     for (let key in ete) {
-      if (['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno', 'RecebePercolado', 'RecebeLodoFossaBan'].includes(key)) {
+      //if (['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno', 'RecebePercolado', 'RecebeLodoFossaBan'].includes(key)) {
+      if (['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoProjAno', 'RecebePercolado', 'RecebeLodoFossaBan'].includes(key)) {
+
         let value = ete[key];
   
         if (isUpdateMode && (value === '' || value === null || value === undefined)) {
@@ -151,7 +153,9 @@ const CadastroETE = ({ navigation, route }) => {
           }
         });
   
-        ['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].forEach(field => {
+        //['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].forEach(field => {
+        ['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoProjAno'].forEach(field => {
+
           formattedEte[field] = parseFloat(ete[field]) || 0;  
         });
   
@@ -185,8 +189,8 @@ const CadastroETE = ({ navigation, route }) => {
       VazaoMediaDiaProj: '',
       NivelTratamento: '',
       PopulacaoRealAtend: '',
-      PopulacaoRealAno: '',
-      PopulacaoRealProj: '',
+      //PopulacaoRealAno: '',
+      //PopulacaoRealProj: '',
       PopulacaoProjAno: '',
       RegimeOper: '',
       Ocupacao: '',
@@ -257,7 +261,9 @@ const CadastroETE = ({ navigation, route }) => {
           style={styles.textInput}
           placeholder={`Digite ${formatFieldLabel(key)}`}
           value={ete[key]}
-          keyboardType={['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].includes(key) ? 'numeric' : 'default'}
+          //keyboardType={['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoRealAno', 'PopulacaoRealProj', 'PopulacaoProjAno'].includes(key) ? 'numeric' : 'default'}
+          keyboardType={['VazaoMediaDiaMedida', 'VazaoMediaDiaProj', 'PopulacaoRealAtend', 'PopulacaoProjAno'].includes(key) ? 'numeric' : 'default'}
+
           onChangeText={value => setEte({ ...ete, [key]: value })}
         />
       )}
@@ -311,12 +317,12 @@ function formatFieldLabel(key) {
   const labels = {
     NomeETE: 'Nome da ETE',
     Endereco: 'Endereço',
-    VazaoMediaDiaMedida: 'Vazão Média Dia Medida (m³/dia)',
-    VazaoMediaDiaProj: 'Vazão Média Dia Projeto (m³/dia)',
+    VazaoMediaDiaMedida: 'Vazão Média Medida (m³/dia)',
+    VazaoMediaDiaProj: 'Vazão Média Projetada (m³/dia)',
     NivelTratamento: 'Nível de Tratamento',
     PopulacaoRealAtend: 'População Real Atendida (habitantes/ano)',
-    PopulacaoRealAno: 'População Real (habitantes/ano)',
-    PopulacaoRealProj: 'População Real Projeto (habitantes/ano)',
+    //PopulacaoRealAno: 'População Real (habitantes/ano)',
+    //PopulacaoRealProj: 'População Real Projeto (habitantes/ano)',
     PopulacaoProjAno: 'População Projetada (habitantes/ano)',
     RegimeOper: 'Regime Operacional',
     Ocupacao: 'Ocupação',

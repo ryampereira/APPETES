@@ -142,22 +142,27 @@ const CadastroAvaliacaoIQE = ({ navigation, route }) => {
         />
       </View>
 
-      <View style={styles.inputGroup}>
+    <View style={styles.inputGroup}>
         <Text style={styles.label}>Avaliador</Text>
         <Picker
-          selectedValue={avaliacao.CodAvaliadorINEA}
+          selectedValue={avaliacao.CodAvaliadorINEA ? String(avaliacao.CodAvaliadorINEA) : ""}
           style={styles.textInput}
-          onValueChange={(itemValue) => setAvaliacao(prev => ({ ...prev, CodAvaliadorINEA: itemValue }))}
+          onValueChange={(itemValue) => setAvaliacao(prev => ({ ...prev, CodAvaliadorINEA: String(itemValue) }))}
         >
           {avaliadores.length > 0 ? (
             avaliadores.map(avaliador => (
-              <Picker.Item key={avaliador.CodAvaliador} label={avaliador.NomeAvaliador} value={avaliador.CodAvaliador} />
+              <Picker.Item 
+                key={avaliador.CodAvaliador} 
+                label={avaliador.NomeAvaliador} 
+                value={String(avaliador.CodAvaliador)} 
+              />
             ))
           ) : (
             <Picker.Item label="Nenhum avaliador disponível" value="" />
           )}
         </Picker>
       </View>
+
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>ETE</Text>
